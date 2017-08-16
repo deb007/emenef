@@ -14,7 +14,7 @@ module.exports = function(app, passport) {
     app.get('/login', function(req, res) {
 
         // render the page and pass in any flash data if it exists
-        res.render('./views/login.html', { message: req.flash('loginMessage') }); 
+        res.render('../views/login', { message: req.flash('loginMessage') }); 
     });
 
     // process the login form
@@ -27,7 +27,7 @@ module.exports = function(app, passport) {
     app.get('/signup', function(req, res) {
 
         // render the page and pass in any flash data if it exists
-        res.render('./views/signup.html', { message: req.flash('signupMessage') });
+        res.render('../views/signup', { message: req.flash('signupMessage') });
     });
 
     // process the signup form
