@@ -52,6 +52,10 @@
             <form class="login-form">
               <div class="row">
                 <div class="input-field col s12">
+                  <!-- show any messages that come back with authentication -->
+                  <% if (message.length > 0) { %>
+                      <div class="alert alert-danger"><%= message %></div>
+                  <% } %>
                   <input class="validate" id="email" name="email" type="email">
                   <label for="email" data-error="Please enter a valid email address" data-success="" class="center-align">Email</label>
                 </div>
