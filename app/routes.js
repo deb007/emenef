@@ -22,7 +22,7 @@ module.exports = function(app, passport) {
     app.get('/signup', function(req, res) {
 
         // render the page and pass in any flash data if it exists
-        res.render('../views/signup', { message: req.flash('signupMessage') });
+        res.render('../views/signup', { message: req.flash('signupMessage'), APP_TITLE: process.env.APP_TITLE });
     });
 
     // process the signup form
@@ -34,7 +34,8 @@ module.exports = function(app, passport) {
 
     app.get('/profile', isLoggedIn, function(req, res) {
         res.render('../views/profile', {
-            user : req.user // get the user out of session and pass to template
+            user : req.user, // get the user out of session and pass to template
+            APP_TITLE: process.env.APP_TITLE
         });
     });
 
