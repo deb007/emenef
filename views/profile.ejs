@@ -30,7 +30,7 @@
            <div class="row">
 
               <!-- LOCAL INFORMATION -->
-              <div class="col s6">
+              <div class="col s12">
                   <div class="panel">
                       <h3><span class="fa fa-user"></span> Local</h3>
                           <p>
@@ -42,7 +42,7 @@
               </div>
 
               <!-- FB INFORMATION -->
-              <div class="col s6">
+              <div class="col s12">
                   <div class="panel">
                       <h3><span class="fa fa-facebook"></span> Facebook</h3>
                           <p>
@@ -51,6 +51,20 @@
                               <strong>Email</strong>: <%= user.facebook.email %><br>
                               <strong>Name</strong>: <%= user.facebook.name %><br>
                               <strong>Gender</strong>: <%= user.facebook.gender %>
+                          </p>
+                  </div>
+              </div>
+             
+             <!-- Google INFORMATION -->
+              <div class="col s12">
+                  <div class="panel">
+                      <h3><span class="fa fa-google-plus"></span> Google</h3>
+                          <p>
+                              <strong>id</strong>: <%= user.google.id %><br>
+                              <strong>Token</strong>: <%= user.google.token %><br>
+                              <strong>Email</strong>: <%= user.google.email %><br>
+                              <strong>Name</strong>: <%= user.google.name %><br>
+                              <strong>Gender</strong>: <%= user.google.gender %>
                           </p>
                   </div>
               </div>

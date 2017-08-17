@@ -159,12 +159,15 @@ module.exports = function(passport) {
                 if (user) {
                     return done(null, user);
                 } else {
-                    var newUser          = new User();
+                  console.log("=============");
+                  console.log(profile);
+                    var newUser            = new User();
 
-                    newUser.google.id    = profile.id;
-                    newUser.google.token = token;
-                    newUser.google.name  = profile.displayName;
-                    newUser.google.email = profile.emails[0].value; 
+                    newUser.google.id      = profile.id;
+                    newUser.google.token   = token;
+                    newUser.google.name    = profile.displayName;
+                    newUser.google.email   = profile.emails[0].value; 
+                    newUser.google.gender  = profile.gender.value; 
 
                     newUser.save(function(err) {
                         if (err)
