@@ -104,7 +104,7 @@ module.exports = function(passport) {
         clientID        : process.env.FB_APPID,
         clientSecret    : process.env.FB_SECRET,
         callbackURL     : process.env.FB_CALLBACK,
-        profileFields   : ['id' ,'email', 'gender', 'link', 'locale', 'name', 'timezone', 'updated_time', 'verified']
+        profileFields   : ['id' ,'email', 'gender', 'name']
     },
 
     
@@ -121,11 +121,12 @@ module.exports = function(passport) {
                   
                   console.log("=============");
                   console.log(profile);
-                    var newUser            = new User();
-                    newUser.facebook.id    = profile.id; 
-                    newUser.facebook.token = token; 
-                    newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; 
-                    newUser.facebook.email = profile.emails[0].value; 
+                    var newUser              = new User();
+                    newUser.facebook.id      = profile.id; 
+                    newUser.facebook.token   = token; 
+                    newUser.facebook.name    = profile.name.givenName + ' ' + profile.name.familyName; 
+                    newUser.facebook.email   = profile.emails[0].value; 
+                    newUser.facebook.gender  = profile.gender; 
 
                     newUser.save(function(err) {
                         if (err)
