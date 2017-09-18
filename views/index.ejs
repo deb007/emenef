@@ -21,7 +21,7 @@
               <div class="background">
                 <img src="images/office.jpg">
               </div>
-              <a href="#!user"><img class="circle" src="images/yuna.jpg"></a>
+              <!-- <a href="#!user"><img class="circle" src="images/yuna.jpg"></a> -->
               <a href="#!name"><span class="white-text name">John Doe</span></a>
               <a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
             </div></li>
@@ -31,7 +31,7 @@
             <li><a class="subheader">Subheader</a></li>
             <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
           </ul>
-          <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+          <a href="#" data-activates="slide-out" class="button-collapse show-on-large"><i class="material-icons">menu</i></a>
           <a href="/" class="brand-logo hoverable">&nbsp;<%= APP_TITLE %>&nbsp;</a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="/login">Login</a></li>
@@ -93,5 +93,10 @@
       <!--Import jQuery before materialize.js-->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+      <script>
+      $(document).ready(function(){
+        $(".button-collapse").sideNav();
+      })
+      </script>
     </body>
   </html>
