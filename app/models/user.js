@@ -1,47 +1,71 @@
-// load the things we need
-var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
+module.exports = function(sequelize, Sequelize) {
 
-// define the schema for our user model
-var userSchema = mongoose.Schema({
+    var User = sequelize.define('user', {
 
-    local            : {
-        email        : String,
-        password     : String,
-    },
-    facebook         : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String,
-        gender       : String
-    },
-    twitter          : {
-        id           : String,
-        token        : String,
-        displayName  : String,
-        username     : String,
-        gender       : String
-    },
-    google           : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String
-    }
+        id: {
+            autoIncrement: true,
+            primaryKey: true,
+            type: Sequelize.INTEGER
+        },
 
-});
+        fullname: {
+            type: Sequelize.STRING,
+            notEmpty: true
+        },
 
-// methods ======================
-// generating a hash
-userSchema.methods.generateHash = function(password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-};
+        username: {
+            type: Sequelize.TEXT
+        },
 
-// checking if password is valid
-userSchema.methods.validPassword = function(password) {
-    return bcrypt.compareSync(password, this.local.password);
-};
+        email: {
+            type: Sequelize.STRING,
+            validate: {
+                isEmail: true
+            }
+        },
 
-// create the model for users and expose it to our app
-module.exports = mongoose.model('User', userSchema);
+        fb_profile_id: {
+            type: Sequelize.STRING
+        },
+
+        fb_token: {
+            type: Sequelize.STRING
+        },
+
+        google_profile_id: {
+            type: Sequelize.STRING
+        },
+
+        google_token: {
+            type: Sequelize.STRING
+        },
+
+        gender: {
+            type: Sequelize.STRING
+        },
+
+        last_login: {
+            type: Sequelize.DATE
+        },
+
+        login_count: {
+            type: Sequelize.INTEGER,
+            defaultValue:0
+        },
+
+        member_type: {
+            type: Sequelize.INTEGER,
+            defaultValue:0
+        },
+
+        status: {
+            type: Sequelize.ENUM('active', 'inactive'),
+            defaultValue: 'active'
+        }
+
+
+    });
+
+    return User;
+
+}
