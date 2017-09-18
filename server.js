@@ -38,7 +38,7 @@ app.set('view engine', 'ejs'); // set up ejs for templating
 
 // required for passport
 app.use(session({
-    secret: 'thisismysecretthisismysecret2thisismysecret',
+    secret: 'thisismysecret1thisismysecret2thisismysecret',
     resave: true,
     saveUninitialized: true
 }));

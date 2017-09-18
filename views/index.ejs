@@ -19,7 +19,6 @@
           <a href="/" class="brand-logo hoverable">&nbsp;<%= APP_TITLE %>&nbsp;</a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="/login">Login</a></li>
-            <li><a href="/signup">Signup</a></li>
           </ul>
         </div>
       </nav>
@@ -27,34 +26,6 @@
 
       <div class="container">
         
-        <script type="text/javascript" src="//www.google.com/jsapi"></script>
-        <script type="text/javascript">
-        // Load the Google Transliteration API
-          google.load("elements", "1", {
-            packages: "transliteration"
-          });
-
-          function onLoad() {
-            var options = {
-              sourceLanguage: 'en',
-              destinationLanguage: ['hi', 'bn'],
-              shortcutKey: 'ctrl+m',
-              transliterationEnabled: true
-            };
-            // Create an instance on TransliterationControl with the required options.
-            var control = new google.elements.transliteration.TransliterationControl(options);
-            // Enable transliteration in the textfields with the given ids.
-            var ids = [ "language" ];
-            control.makeTransliteratable(ids);
-            // Show the transliteration control which can be used to toggle between
-            // English and Hindi and also choose other destination language.
-            control.showControl('translControl');
-          }
-          google.setOnLoadCallback(onLoad);
-        </script>
-
-        <form><textarea name="ta" rows="6" id="language" cols="6" style="width:600px;height:218px" ></textarea></form>        
-        <div id="translControl"></div>
       </div>
       
       <!--Import jQuery before materialize.js-->
