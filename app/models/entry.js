@@ -17,6 +17,20 @@ module.exports = function(sequelize, Sequelize) {
             type: Sequelize.TEXT
         },
 
+        memories: {
+            type: Sequelize.INTEGER,
+            defaultValue:0
+        },
+
+        forecast: {
+            type: Sequelize.INTEGER,
+            defaultValue:0
+        },
+
+        entry_date: {
+            type: Sequelize.DATE
+        },
+
         status: {
             type: Sequelize.INTEGER,
             defaultValue:1

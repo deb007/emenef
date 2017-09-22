@@ -49,13 +49,9 @@
               <div class="col s12">
                 I 
                 <div class="input-field inline">
-                  <select id="verb">
-                    <option value="" disabled selected>Choose</option>
-                    <option value="1">Option 1</option>
-                    <option value="2">Option 2</option>
-                    <option value="3">Option 3</option>
-                  </select>
-                  <label>Verb</label>
+                  <i class="material-icons prefix">textsms</i>
+                  <input type="text" id="verb" class="autocomplete">
+                  <label for="verb">Verb</label>
                 </div>
               </div>
             </div>
@@ -74,8 +70,13 @@
             </div>
             <div class="row">
               <div class="input-field col s12">
-                <input id="password" type="password" class="validate">
-                <label for="password">Password</label>
+                <input type="checkbox" id="forecasts" />
+                <label for="forecasts">Use for Forecast?</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input type="text" class="datepicker">
               </div>
             </div>
             <div class="row">
@@ -106,6 +107,27 @@
         $(".button-collapse").sideNav();
         $('select').material_select();
       })
+      $('.datepicker').pickadate({
+        selectMonths: true, // Creates a dropdown to control month
+        selectYears: 15, // Creates a dropdown of 15 years to control year,
+        today: 'Today',
+        clear: 'Clear',
+        close: 'Ok',
+        closeOnSelect: false // Close upon selecting a date,
+      });
+        
+      $('input.autocomplete').autocomplete({
+        data: {
+          "Apple": null,
+          "Microsoft": null,
+          "Google": 'https://placehold.it/250x250'
+        },
+        limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+        onAutocomplete: function(val) {
+          // Callback function when value is autcompleted.
+        },
+        minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
+      });
       </script>
     </body>
   </html>
