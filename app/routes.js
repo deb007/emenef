@@ -7,6 +7,13 @@ module.exports = function(app, passport, models) {
       });
     });
 
+    app.get('/add', function(req, res) {
+      res.render('../views/add-new', {
+        APP_TITLE: process.env.APP_TITLE,
+        user: req.user
+      });
+    });
+
   // show the login form
     app.get('/login', function(req, res) {
 

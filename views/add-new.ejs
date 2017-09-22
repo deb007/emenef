@@ -9,7 +9,7 @@
 
       <!--Let browser know website is optimized for mobile-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>Welcome to <%= APP_TITLE %></title>
+      <title><%= APP_TITLE %> - Add new entry</title>
     </head>
 
     <body>
@@ -44,43 +44,48 @@
           </ul>
         
         <div class="row">
-          <div class="col s12 z-depth-5">
-            <div class="card brown darken-1">
-              <div class="card-content white-text">
-                <span class="card-title">Your To-Do list for today!!</span>
-                <p>Hey!! These are the tasks you would like to probably do today -</p>
-                 <div class="collection">
-                  <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 1</a>
-                  <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 2</a>
-                  <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 3</a>
-                  <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 4</a>
+          <form class="col s12">
+            <div class="row">
+              <div class="input-field col s6">
+                <input placeholder="Placeholder" id="first_name" type="text" class="validate">
+                <label for="first_name">First Name</label>
+              </div>
+              <div class="input-field col s6">
+                <input id="last_name" type="text" class="validate">
+                <label for="last_name">Last Name</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input disabled value="I am not editable" id="disabled" type="text" class="validate">
+                <label for="disabled">Disabled</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="password" type="password" class="validate">
+                <label for="password">Password</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="email" type="email" class="validate">
+                <label for="email">Email</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col s12">
+                This is an inline input field:
+                <div class="input-field inline">
+                  <input id="email" type="email" class="validate">
+                  <label for="email" data-error="wrong" data-success="right">Email</label>
                 </div>
               </div>
             </div>
-          </div>
+          </form>
         </div>
         
-        <div class="row">
-          <div class="col s12 z-depth-5">
-            <div class="card purple darken-1">
-              <div class="card-content white-text">
-                <span class="card-title">Your Memories for today!!</span>
-                <p>This date in the last yeards, this is what you did -</p>
-                 <div class="collection">
-                  <a href="#!" class="collection-item">Item 1</a>
-                  <a href="#!" class="collection-item">Item 2</a>
-                  <a href="#!" class="collection-item">Item 3</a>
-                  <a href="#!" class="collection-item">Item 4</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-         <div class="fixed-action-btn">
-            <a class="btn-floating btn-large red" href="/add">
-              <i class="large material-icons">add</i>
-            </a>
-          </div>
+        
       </div>
       
       <footer class="page-footer blue">
