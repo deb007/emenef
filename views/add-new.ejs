@@ -128,7 +128,13 @@
         today: 'Today',
         clear: 'Clear',
         close: 'Ok',
-        closeOnSelect: false // Close upon selecting a date,
+        closeOnSelect: false, // Close upon selecting a date
+        formatSubmit: 'yyyy/mm/dd',
+        onStart: function ()
+        {
+            var date = new Date();
+            this.set('select', [date.getFullYear(), date.getMonth(), date.getDate()]);
+        },
       });
         
       
