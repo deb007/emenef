@@ -132,6 +132,20 @@
       $(document).ready(function(){
         $(".button-collapse").sideNav();
         $('select').material_select();
+
+        $( "#entry_date" ).change(function() {
+          $('#days_ago').val(get_diff());
+        })
+                                  
+        function get_diff() {
+          var one_day=1000*60*60*24;
+          var ld = $('#last_date').val();
+          if(ld != '') {
+            var ed = $('#entry_date').val();
+            var da = Date.parse(ed) - Date.parse(ld);
+            return Math.round(da/one_day);
+          }
+        };
         
         $(function() {
           $.ajax({
@@ -157,8 +171,15 @@
                       if(resp.length == 1) {
                         $('#task').val(resp[0].task);
                         $('#last_date').val(resp[0].entry_date);
+                        $('#days_ago').val(get_diff());
+                        $('#task').autocomplete({
+                          data: {}
+                        });
                       }
                       else {
+                        $('#task').val('');
+                        $('#last_date').val('');
+                        $('#days_ago').val('');
                         for (var i = 0; i < resp.length; i++) {
                           var strkey = resp[i].task + '. Last entry on:' + resp[i].entry_date;
                           dataTasks[strkey] = null;
@@ -172,6 +193,7 @@
                             var res = valT.split(". Last entry on:");
                             $('#task').val(res[0]);
                             $('#last_date').val(res[1]);
+                            $('#days_ago').val(get_diff());
                           },
                           minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
                         });
