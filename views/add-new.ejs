@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
   <html>
     <head>
       <!--Import Google Icon Font-->
@@ -42,24 +42,34 @@
             <li><a class="subheader">Subheader</a></li>
             <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
           </ul>
-        
+
         <div class="row">
+        <% if(message) {%>
+          <ul>
+             <% for(var i = 0;i< message.length;i++){ %>
+             <li><%= message[i].msg %></li>
+             <%}%>
+          </ul>
+          <% }%>
+            <% if(messagestatus) {%>
+               <%= messagestatus %>
+            <% }%>
           <h3>
             What did you do today?<br>
                 I ...
           </h3>
-          <form class="col s12">
+          <form class="col s12" method="POST" action="/save">
             <div class="row">
               <div class="col s6">
                 <div class="input-field">
                   <i class="material-icons prefix">textsms</i>
-                  <input type="text" id="verb" class="autocomplete">
+                  <input type="text" id="verb" name="verb" class="autocomplete">
                   <label for="verb">Verb (got, bought, had, went ...)</label>
                 </div>
               </div>
               <div class="input-field col s6">
                 <i class="material-icons prefix">mode_edit</i>
-                <input placeholder="What did you do.." id="task" type="text" class="validate">
+                <input placeholder="What did you do.." id="task" name="task" type="text" class="validate">
                 <label for="task">Task</label>
               </div>
             </div>
@@ -67,17 +77,31 @@
               On..
               <div class="input-field col s12">
                 <i class="material-icons prefix">date_range</i>
-                <input type="text" class="datepicker">
+                <input type="text" class="datepicker" id="entry_date" name="entry_date">
               </div>
             </div>
             <div class="row">
-              <div class="input-field col s6">
-                <input type="checkbox" id="memories" />
+              <div class="col s6">
+                <input type="checkbox" id="memories" name="memories" value="1" />
                 <label for="memories">Add to Memories?</label>
               </div>
-              <div class="input-field col s6">
-                <input type="checkbox" id="forecasts" />
-                <label for="forecasts">Use for Forecast?</label>
+              <div class="col s6">
+                <input type="checkbox" id="forecast" name="forecast" value="1" />
+                <label for="forecast">Use for Forecast?</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s4">
+                <input type="text" id="last_date" name="last_date">
+                <label for="last_date">Last Done on</label>
+              </div>
+              <div class="input-field col s4">
+                <input type="text" id="days_ago" name="days_ago">
+                <label for="days_ago">Days ago</label>
+              </div>
+              <div class="input-field col s4">
+                <input type="text" id="usually" name="usually" />
+                <label for="usually">Usually takes</label>
               </div>
             </div>
             <div class="row">
@@ -89,10 +113,10 @@
             </div>
           </form>
         </div>
-        
-        
+
+
       </div>
-      
+
       <footer class="page-footer blue">
         <div class="footer-copyright blue">
           <div class="container">
@@ -100,7 +124,7 @@
         </div>
         </div>
       </footer>
-      
+
       <!--Import jQuery before materialize.js-->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
@@ -109,17 +133,56 @@
         $(".button-collapse").sideNav();
         $('select').material_select();
         
-        $('input.autocomplete').autocomplete({
-          data: {
-            "Apple": null,
-            "Microsoft": null,
-            "Google": 'https://placehold.it/250x250'
-          },
-          limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
-          onAutocomplete: function(val) {
-            // Callback function when value is autcompleted.
-          },
-          minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
+        $(function() {
+          $.ajax({
+            type: 'GET',
+            url: '/api/get_verbs',
+            success: function(response) {
+              
+              var dataVerbs = {};
+              for (var i = 0; i < response.length; i++) {
+                dataVerbs[response[i].verb] = null; //countryArray[i].flag or null
+              }
+
+              $('#verb').autocomplete({
+                data: dataVerbs,
+                limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+                onAutocomplete: function(val) {
+                  $.ajax({
+                    type: 'GET',
+                    url: '/api/get_tasks?v='+val,
+                    success: function(resp) {
+
+                      var dataTasks = {};
+                      if(resp.length == 1) {
+                        $('#task').val(resp[0].task);
+                        $('#last_date').val(resp[0].entry_date);
+                      }
+                      else {
+                        for (var i = 0; i < resp.length; i++) {
+                          var strkey = resp[i].task + '. Last entry on:' + resp[i].entry_date;
+                          dataTasks[strkey] = null;
+                        }
+
+                        $('#task').autocomplete({
+                          data: dataTasks,
+                          limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+                          onAutocomplete: function(valT) {
+                            alert(valT);
+                            var res = valT.split(". Last entry on:");
+                            $('#task').val(res[0]);
+                            $('#last_date').val(res[1]);
+                          },
+                          minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
+                        });
+                      }
+                    }
+                  });
+                },
+                minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
+              });
+            }
+          });
         });
       })
       $('.datepicker').pickadate({
@@ -136,8 +199,8 @@
             this.set('select', [date.getFullYear(), date.getMonth(), date.getDate()]);
         },
       });
-        
-      
+
+
       </script>
     </body>
   </html>
