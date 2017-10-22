@@ -1,103 +1,111 @@
- <!DOCTYPE html>
-  <html>
-    <head>
-      <!--Import Google Icon Font-->
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-      <!--Import materialize.css-->
-      <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"  media="screen,projection"/>
-      <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+<!DOCTYPE html>
+ <html>
+   <head>
+     <!--Import Google Icon Font-->
+     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+     <!--Import materialize.css-->
+     <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"  media="screen,projection"/>
+     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
 
-      <!--Let browser know website is optimized for mobile-->
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>Welcome to <%= APP_TITLE %></title>
-    </head>
+     <!--Let browser know website is optimized for mobile-->
+     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+     <title>Welcome to <%= APP_TITLE %></title>
+   </head>
 
-    <body>
-      <div class="navbar-fixed">
-      <nav>
-        <div class="nav-wrapper blue accent-4">
-          <a href="#" data-activates="slide-out" class="button-collapse show-on-large"><i class="material-icons">menu</i></a>
-          <a href="/" class="brand-logo hoverable">&nbsp;<%= APP_TITLE %>&nbsp;</a>
-          <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li><a href="/login">Login</a></li>
-          </ul>
-        </div>
-      </nav>
-      </div>
+   <body>
+     <div class="navbar-fixed">
+     <nav>
+       <div class="nav-wrapper blue accent-4">
+         <a href="#" data-activates="slide-out" class="button-collapse show-on-large"><i class="material-icons">menu</i></a>
+         <a href="/" class="brand-logo hoverable">&nbsp;<%= APP_TITLE %>&nbsp;</a>
+         <ul id="nav-mobile" class="right hide-on-med-and-down">
+           <li><a href="/login">Login</a></li>
+         </ul>
+       </div>
+     </nav>
+     </div>
 
-      <div class="container">
+     <div class="container">
 
-          <ul id="slide-out" class="side-nav">
-            <li><div class="user-view">
-              <div class="background">
-                <img src="images/office.jpg">
-              </div>
-              <!-- <a href="#!user"><img class="circle" src="images/yuna.jpg"></a> -->
-              <a href="#!name"><span class="white-text name">John Doe</span></a>
-              <a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
-            </div></li>
-            <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
-            <li><a href="#!">Second Link</a></li>
-            <li><div class="divider"></div></li>
-            <li><a class="subheader">Subheader</a></li>
-            <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
-          </ul>
-        
-        <div class="row">
-          <div class="col s12 z-depth-5">
-            <div class="card brown darken-1">
-              <div class="card-content white-text">
-                <span class="card-title">Your To-Do list for today!!</span>
-                <p>Hey!! These are the tasks you would like to probably do today -</p>
-                 <div class="collection">
-                  <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 1</a>
-                  <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 2</a>
-                  <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 3</a>
-                  <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 4</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="col s12 z-depth-5">
-            <div class="card purple darken-1">
-              <div class="card-content white-text">
-                <span class="card-title">Your Memories for today!!</span>
-                <p>This date in the last yeards, this is what you did -</p>
-                 <div class="collection">
-                  <a href="#!" class="collection-item">Item 1</a>
-                  <a href="#!" class="collection-item">Item 2</a>
-                  <a href="#!" class="collection-item">Item 3</a>
-                  <a href="#!" class="collection-item">Item 4</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-         <div class="fixed-action-btn">
-            <a class="btn-floating btn-large red" href="/add">
-              <i class="large material-icons">add</i>
-            </a>
-          </div>
-      </div>
-      
-      <footer class="page-footer blue">
-        <div class="footer-copyright blue">
-          <div class="container">
-          © 2017 Copyright Text
-        </div>
-        </div>
-      </footer>
-      
-      <!--Import jQuery before materialize.js-->
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-      <script>
-      $(document).ready(function(){
-        $(".button-collapse").sideNav();
-      })
-      </script>
-    </body>
-  </html>
+         <ul id="slide-out" class="side-nav">
+           <li><div class="user-view">
+             <div class="background">
+               <img src="images/office.jpg">
+             </div>
+             <!-- <a href="#!user"><img class="circle" src="images/yuna.jpg"></a> -->
+             <a href="#!name"><span class="white-text name">John Doe</span></a>
+             <a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+           </div></li>
+           <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+           <li><a href="#!">Second Link</a></li>
+           <li><div class="divider"></div></li>
+           <li><a class="subheader">Subheader</a></li>
+           <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+         </ul>
+
+       <div class="row">
+         <div class="col s12 z-depth-5">
+           <div class="card brown darken-1">
+             <div class="card-content white-text">
+               <span class="card-title">Your To-Do list for today!!</span>
+               <p>Hey!! These are the tasks you would like to probably do today -</p>
+                <div class="collection">
+                 <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 1</a>
+                 <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 2</a>
+                 <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 3</a>
+                 <a href="#!" class="collection-item"><span class="new badge red" data-badge-caption="Ignore"></span>Item 4</a>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+
+       <div class="row">
+         <div class="col s12 z-depth-5">
+           <div class="card purple darken-1">
+             <div class="card-content white-text">
+               <span class="card-title">Your Memories for today!!</span>
+               <% if(m_entries.count > 0) { %>
+               <p>This date in the last few years, this is what happened -</p>
+                <div class="collection">
+                  <% m_entries.forEach(function(me) { %>
+                  <a href="#!" class="collection-item">
+                    <%= me.verb + " " + me.task %>
+                    <span class="badge new"  data-badge-caption=""><time class="timeago" datetime="<%= me.ed %>"><%= me.ed %></time></span>
+                  </a>
+                  <% }) %>
+               </div>
+               <% } else { %>
+                 <p>Sorry, No entries on today's date. Why not <a href='/add'>add few entries</a>?</p>
+               <% } %>
+             </div>
+           </div>
+         </div>
+       </div>
+        <div class="fixed-action-btn">
+           <a class="btn-floating btn-large red" href="/add">
+             <i class="large material-icons">add</i>
+           </a>
+         </div>
+     </div>
+
+     <footer class="page-footer blue">
+       <div class="footer-copyright blue">
+         <div class="container">
+         © 2017 Copyright Text
+       </div>
+       </div>
+     </footer>
+
+     <!--Import jQuery before materialize.js-->
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+     <script src="/jquery.timeago.js" type="text/javascript"></script>
+     <script>
+     $(document).ready(function(){
+       $("time.timeago").timeago();
+       $(".button-collapse").sideNav();
+     })
+     </script>
+   </body>
+ </html>

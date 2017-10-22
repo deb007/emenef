@@ -31,6 +31,15 @@ module.exports = function(sequelize, Sequelize) {
             type: Sequelize.DATE
         },
 
+        days_ago: {
+            type: Sequelize.INTEGER,
+            defaultValue:0
+        },
+
+        next_date: {
+            type: Sequelize.DATE
+        },
+
         status: {
             type: Sequelize.INTEGER,
             defaultValue:1

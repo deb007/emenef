@@ -88,20 +88,9 @@
               <div class="col s6">
                 <input type="checkbox" id="forecast" name="forecast" value="1" />
                 <label for="forecast">Use for Forecast?</label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="input-field col s4">
-                <input type="text" id="last_date" name="last_date">
-                <label for="last_date">Last Done on</label>
-              </div>
-              <div class="input-field col s4">
-                <input type="text" id="days_ago" name="days_ago">
-                <label for="days_ago">Days ago</label>
-              </div>
-              <div class="input-field col s4">
-                <input type="text" id="usually" name="usually" />
-                <label for="usually">Usually takes</label>
+
+                  <input type="text" id="last_date" name="last_date">
+                  <input type="text" id="days_ago" name="days_ago">
               </div>
             </div>
             <div class="row">
@@ -128,101 +117,6 @@
       <!--Import jQuery before materialize.js-->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-      <script>
-      $(document).ready(function(){
-        $(".button-collapse").sideNav();
-        $('select').material_select();
-
-        $( "#entry_date" ).change(function() {
-          $('#days_ago').val(get_diff());
-        })
-                                  
-        function get_diff() {
-          var one_day=1000*60*60*24;
-          var ld = $('#last_date').val();
-          if(ld != '') {
-            var ed = $('#entry_date').val();
-            var da = Date.parse(ed) - Date.parse(ld);
-            return Math.round(da/one_day);
-          }
-        };
-        
-        $(function() {
-          $.ajax({
-            type: 'GET',
-            url: '/api/get_verbs',
-            success: function(response) {
-              
-              var dataVerbs = {};
-              for (var i = 0; i < response.length; i++) {
-                dataVerbs[response[i].verb] = null; //countryArray[i].flag or null
-              }
-
-              $('#verb').autocomplete({
-                data: dataVerbs,
-                limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
-                onAutocomplete: function(val) {
-                  $.ajax({
-                    type: 'GET',
-                    url: '/api/get_tasks?v='+val,
-                    success: function(resp) {
-
-                      var dataTasks = {};
-                      if(resp.length == 1) {
-                        $('#task').val(resp[0].task);
-                        $('#last_date').val(resp[0].entry_date);
-                        $('#days_ago').val(get_diff());
-                        $('#task').autocomplete({
-                          data: {}
-                        });
-                      }
-                      else {
-                        $('#task').val('');
-                        $('#last_date').val('');
-                        $('#days_ago').val('');
-                        for (var i = 0; i < resp.length; i++) {
-                          var strkey = resp[i].task + '. Last entry on:' + resp[i].entry_date;
-                          dataTasks[strkey] = null;
-                        }
-
-                        $('#task').autocomplete({
-                          data: dataTasks,
-                          limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
-                          onAutocomplete: function(valT) {
-                            alert(valT);
-                            var res = valT.split(". Last entry on:");
-                            $('#task').val(res[0]);
-                            $('#last_date').val(res[1]);
-                            $('#days_ago').val(get_diff());
-                          },
-                          minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
-                        });
-                      }
-                    }
-                  });
-                },
-                minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
-              });
-            }
-          });
-        });
-      })
-      $('.datepicker').pickadate({
-        selectMonths: true, // Creates a dropdown to control month
-        selectYears: 15, // Creates a dropdown of 15 years to control year,
-        today: 'Today',
-        clear: 'Clear',
-        close: 'Ok',
-        closeOnSelect: false, // Close upon selecting a date
-        formatSubmit: 'yyyy/mm/dd',
-        onStart: function ()
-        {
-            var date = new Date();
-            this.set('select', [date.getFullYear(), date.getMonth(), date.getDate()]);
-        },
-      });
-
-
-      </script>
+      <script src="/client.js"></script>
     </body>
   </html>

@@ -1,10 +1,20 @@
 module.exports = function(app, passport, models) {
 
     app.get('/', function(req, res) {
-      res.render('../views/index', {
-        APP_TITLE: process.env.APP_TITLE,
-        user: req.user
-      });
+      var Entry = models.entry;
+      var today = new Date();
+      var dd = today.getDate();
+
+      Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed FROM entries where status=1 AND memories=1 AND entry_date < CURDATE() AND DATE_FORMAT(entry_date, '%d') = " + dd,
+        { type: Entry.sequelize.QueryTypes.SELECT})
+      .then(function (m_entries) {
+        res.render('../views/index', {
+          APP_TITLE: process.env.APP_TITLE,
+          user: req.user,
+          m_entries: m_entries
+        });
+      })
+
     });
 
     app.get('/add', function(req, res) {
@@ -38,14 +48,37 @@ module.exports = function(app, passport, models) {
             memories: req.body.memories,
             forecast: req.body.forecast,
             entry_date: req.body.entry_date,
+            days_ago: req.body.days_ago,
             status: req.body.status,
             created_by: 1                     //user.id
           };
           Entry.create(data).then(function(newItem) {
               if (newItem) {
-                req.flash('addStatus', 'Successfully added.');
-                res.redirect('/add');
-                return;
+                console.log(newItem.id);
+                if(newItem.forecast == 1) {
+                  Entry.findAll({
+                    where: {status: 1, forecast: 1, days_ago:{$gt:0}, verb: req.body.verb, task: req.body.task},
+                    attributes: [[Entry.sequelize.fn('AVG', Entry.sequelize.col('days_ago')), 'days_ago'], 'verb' ,'task'],
+                    raw: true
+                  }).then(function(e) {
+                    if(e[0].days_ago > 0) {
+                      Entry.sequelize.query("UPDATE entries SET next_date = DATE_ADD(entry_date, INTERVAL '"+Math.round(e[0].days_ago)+"' DAY) WHERE id = "+newItem.id)
+                      .spread((results, metadata) => {
+                        console.log("Update done");
+                        console.log(results);
+                      })
+                    }
+                    req.flash('addStatus', 'Successfully added.');
+                    res.redirect('/add');
+                    return;
+                  })
+                } else {
+                    req.flash('addStatus', 'Successfully added.');
+                    res.redirect('/add');
+                    return;
+
+
+                }
               }
           }).catch(function(err){
               req.flash('addStatus', 'Could not be added. Please try again later');
@@ -105,14 +138,13 @@ module.exports = function(app, passport, models) {
         var Entry = models.entry;
         var verb = req.query.v;
         Entry.findAll({
-          where: {status: 1, verb: verb},
+          where: {status: 1, forecast: 1, verb: verb},
           attributes: [[Entry.sequelize.fn('MAX', Entry.sequelize.col('entry_date')), 'entry_date'] ,'task'],
           group: ['task'],
           order: [['task', 'ASC']],
           limit: 10,
           raw: true
         }).then(function (entries) {
-          console.log(entries);
           res.send(entries);
         })
 
