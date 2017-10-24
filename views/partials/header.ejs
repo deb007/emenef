@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+ <html>
+   <head>
+     <!--Import Google Icon Font-->
+     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+     <!--Import materialize.css-->
+     <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"  media="screen,projection"/>
+     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+
+     <!--Let browser know website is optimized for mobile-->
+     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+     <title>Welcome to <%= APP_TITLE %></title>
+     <style>
+       body {
+          display: flex;
+          min-height: 100vh;
+          flex-direction: column;
+        }
+
+        main {
+          flex: 1 0 auto;
+        }
+     </style>
+   </head>
+
+   <body>
+     <header>
+     <div class="navbar-fixed">
+     <nav>
+       <div class="nav-wrapper blue accent-4">
+         <a href="#" data-activates="slide-out" class="button-collapse show-on-large"><i class="material-icons">menu</i></a>
+         <a href="/" class="brand-logo hoverable">&nbsp;<%= APP_TITLE %>&nbsp;</a>
+         <ul id="nav-mobile" class="right hide-on-med-and-down">
+           <li><a href="/login">Login</a></li>
+         </ul>
+       </div>
+     </nav>
+     </div>
+    </header>
+
+     <main>
+       <div class="container">
+
+         <ul id="slide-out" class="side-nav">
+           <li><div class="user-view">
+             <div class="background">
+               <img src="images/office.jpg">
+             </div>
+             <!-- <a href="#!user"><img class="circle" src="images/yuna.jpg"></a> -->
+             <a href="#!name"><span class="white-text name">John Doe</span></a>
+             <a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+           </div></li>
+           <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+           <li><a href="#!">Second Link</a></li>
+           <li><div class="divider"></div></li>
+           <li><a class="subheader">Subheader</a></li>
+           <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+         </ul>

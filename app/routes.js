@@ -8,11 +8,18 @@ module.exports = function(app, passport, models) {
       Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed FROM entries where status=1 AND memories=1 AND entry_date < CURDATE() AND DATE_FORMAT(entry_date, '%d') = " + dd,
         { type: Entry.sequelize.QueryTypes.SELECT})
       .then(function (m_entries) {
-        res.render('../views/index', {
-          APP_TITLE: process.env.APP_TITLE,
-          user: req.user,
-          m_entries: m_entries
-        });
+
+        Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed FROM entries where status=1 AND forecast=1 AND next_date = CURDATE()",
+          { type: Entry.sequelize.QueryTypes.SELECT})
+        .then(function (f_entries) {
+
+          res.render('../views/index', {
+            APP_TITLE: process.env.APP_TITLE,
+            user: req.user,
+            m_entries: m_entries,
+            f_entries: f_entries
+          });
+        })
       })
 
     });
