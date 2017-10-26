@@ -3,7 +3,10 @@ module.exports = function(app, passport, models) {
     app.get('/', function(req, res) {
       var Entry = models.entry;
       var today = new Date();
+      var dd_str = '';
       var dd = today.getDate();
+      var tomorrow = new Date();
+      tomorrow.setDate(today.getDate()+1);
 
       Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed FROM entries where status=1 AND memories=1 AND entry_date < CURDATE() AND DATE_FORMAT(entry_date, '%d') = " + dd,
         { type: Entry.sequelize.QueryTypes.SELECT})
