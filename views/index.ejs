@@ -4,14 +4,14 @@
          <div class="col s12 z-depth-5">
            <div class="card indigo lighten-4" style="min-height: 12rem;">
              <div class="card-content">
-               <span class="card-title">Your Forecasted tasks for today!!</span>
-               <% if(f_entries.count > 0) { %>
+               <span class="card-title">Your Forecasted upcoming tasks!!</span>
+               <% if(f_entries.length > 0) { %>
                 <p>Hey!! These are the tasks you would probably want to do today -</p>
                 <div class="collection">
                   <% f_entries.forEach(function(fe) { %>
-                  <a href="#!" class="collection-item">
-                    <%= fe.verb + " " + fe.task %>
-                    <span class="badge new red"  data-badge-caption=""><time class="timeago" datetime="<%= fe.ed %>"><%= fe.ed %></time></span>
+                  <a href="/add?verb=<%= fe.verb %>&task=<%= fe.task %>" class="collection-item">
+                    <span><i class="material-icons">add_circle</i> You last <b><%= fe.verb + " " + fe.task %></b> on <b><%= fe.ed2 %></b>.</span>
+                    <span class="badge new blue" data-badge-caption="Next one should be "><time class="timeago" datetime="<%= fe.ed %>"><%= fe.ed %></time></span>
                   </a>
                   <% }) %>
                </div>
@@ -32,13 +32,13 @@
            <div class="card deep-purple lighten-3" style="min-height: 12rem;">
              <div class="card-content">
                <span class="card-title">Your Memories for today!!</span>
-               <% if(m_entries.count > 0) { %>
+               <% if(m_entries.length > 0) { %>
                <p>This date in the last few years, this is what happened -</p>
                 <div class="collection">
                   <% m_entries.forEach(function(me) { %>
-                  <a href="#!" class="collection-item">
-                    <%= me.verb + " " + me.task %>
-                    <span class="badge new"  data-badge-caption="Ignore"><time class="timeago" datetime="<%= me.ed %>"><%= me.ed %></time></span>
+                  <a href="/add?verb=<%= me.verb %>&task=<%= me.task %>" class="collection-item">
+                    <span><i class="material-icons">info_outline</i> <%= me.verb + " " + me.task + " on " + me.ed2 %></span>
+                    <span class="badge new red"  data-badge-caption=""><time class="timeago" datetime="<%= me.ed %>"><%= me.ed %></time></span>
                   </a>
                   <% }) %>
                </div>

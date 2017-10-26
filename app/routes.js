@@ -2,17 +2,23 @@ module.exports = function(app, passport, models) {
 
     app.get('/', function(req, res) {
       var Entry = models.entry;
-      var today = new Date();
-      var dd_str = '';
-      var dd = today.getDate();
-      var tomorrow = new Date();
-      tomorrow.setDate(today.getDate()+1);
+      var currentDate = new Date();
+      var dd_str = currentDate.getDate();
+      for (var i = 0; i < 3; i++) {
+        currentDate.setDate(currentDate.getDate() + 1);
+        dd_str += ',' + currentDate.getDate();
+      }
+      var currentDate = new Date();
+      for (var i = 0; i < 3; i++) {
+        currentDate.setDate(currentDate.getDate() - 1);
+        dd_str += ',' + currentDate.getDate();
+      }
 
-      Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed FROM entries where status=1 AND memories=1 AND entry_date < CURDATE() AND DATE_FORMAT(entry_date, '%d') = " + dd,
+      Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where status=1 AND memories=1 AND entry_date < CURDATE() AND DATE_FORMAT(entry_date, '%d') IN (" + dd_str + ") ORDER BY entry_date DESC",
         { type: Entry.sequelize.QueryTypes.SELECT})
       .then(function (m_entries) {
 
-        Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed FROM entries where status=1 AND forecast=1 AND next_date = CURDATE()",
+        Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(next_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where status=1 AND forecast=1 AND next_date BETWEEN NOW() AND NOW() + INTERVAL 7 DAY ORDER BY next_date",
           { type: Entry.sequelize.QueryTypes.SELECT})
         .then(function (f_entries) {
 
@@ -32,7 +38,9 @@ module.exports = function(app, passport, models) {
         APP_TITLE: process.env.APP_TITLE,
         user: req.user,
         message: req.flash('addErrors'),
-        messagestatus: req.flash('addStatus')
+        messagestatus: req.flash('addStatus'),
+        verb: req.query.verb,
+        task: req.query.task
       });
     });
 
@@ -147,16 +155,32 @@ module.exports = function(app, passport, models) {
       app.get('/api/get_tasks', function(req, res) {
         var Entry = models.entry;
         var verb = req.query.v;
-        Entry.findAll({
-          where: {status: 1, forecast: 1, verb: verb},
-          attributes: [[Entry.sequelize.fn('MAX', Entry.sequelize.col('entry_date')), 'entry_date'] ,'task'],
-          group: ['task'],
-          order: [['task', 'ASC']],
-          limit: 10,
-          raw: true
-        }).then(function (entries) {
-          res.send(entries);
-        })
+        var task = req.query.t;
+
+        if(task != ''){
+          Entry.findAll({
+            where: {status: 1, forecast: 1, verb: verb, task: task},
+            attributes: [[Entry.sequelize.fn('MAX', Entry.sequelize.col('entry_date')), 'entry_date'] ,'task'],
+            group: ['task'],
+            order: [['task', 'ASC']],
+            limit: 10,
+            raw: true
+          }).then(function (entries) {
+            res.send(entries);
+          })
+
+        } else {
+          Entry.findAll({
+            where: {status: 1, forecast: 1, verb: verb},
+            attributes: [[Entry.sequelize.fn('MAX', Entry.sequelize.col('entry_date')), 'entry_date'] ,'task'],
+            group: ['task'],
+            order: [['task', 'ASC']],
+            limit: 10,
+            raw: true
+          }).then(function (entries) {
+            res.send(entries);
+          })
+        }
 
       });
 

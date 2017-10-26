@@ -1,6 +1,33 @@
+function validate() {
+  if($( "input:checked" ).length == 0){
+    alert ("You may want to select to either Add to Memories or Add to Forecast !");
+    return false;
+  } else {
+    $('#f').submit();
+    return false;
+  }
+}
+
 $(document).ready(function(){
   $(".button-collapse").sideNav();
   $('select').material_select();
+
+  if($('#verb').val() != '' && $('#task').val() != '') {
+    $.ajax({
+      type: 'GET',
+      url: '/api/get_tasks?v='+$('#verb').val()+'&t='+$('#task').val(),
+      success: function(resp) {
+
+        var dataTasks = {};
+        $('#task').val(resp[0].task);
+        $('#last_date').val(resp[0].entry_date);
+        $('#days_ago').val(get_diff());
+        $('#task').autocomplete({
+          data: {}
+        });
+      }
+    })
+  }
 
   $( "#entry_date" ).change(function() {
     $('#days_ago').val(get_diff());
