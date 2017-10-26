@@ -33,7 +33,7 @@
              <div class="card-content">
                <span class="card-title">Your Memories for today!!</span>
                <% if(m_entries.length > 0) { %>
-               <p>This date in the last few years, this is what happened -</p>
+               <p>This is what happened around today's date (<%= dd %>) in the last few years -</p>
                 <div class="collection">
                   <% m_entries.forEach(function(me) { %>
                   <a href="/add?verb=<%= me.verb %>&task=<%= me.task %>" class="collection-item">

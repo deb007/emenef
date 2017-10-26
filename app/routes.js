@@ -14,7 +14,7 @@ module.exports = function(app, passport, models) {
         dd_str += ',' + currentDate.getDate();
       }
 
-      Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where status=1 AND memories=1 AND entry_date < CURDATE() AND DATE_FORMAT(entry_date, '%d') IN (" + dd_str + ") ORDER BY entry_date DESC",
+      Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where status=1 AND memories=1 AND entry_date < CURDATE() AND DATE_FORMAT(entry_date, '%d') IN (" + dd_str + ")",
         { type: Entry.sequelize.QueryTypes.SELECT})
       .then(function (m_entries) {
 
@@ -26,11 +26,47 @@ module.exports = function(app, passport, models) {
             APP_TITLE: process.env.APP_TITLE,
             user: req.user,
             m_entries: m_entries,
-            f_entries: f_entries
+            f_entries: f_entries,
+            dd: new Date().getDate()
           });
         })
       })
 
+    });
+
+
+    app.get('/browse', function(req, res) {
+      var Entry = models.entry;
+      var cnt = 0;
+      var limit = 10;
+      var offset = 0;
+      var page = req.query.page ? req.query.page : 1;
+      offset = limit * (page - 1);
+
+      Entry.findAndCountAll({
+        where:{created_by: 1, status: 1},   //req.user.id
+        attributes: ['verb', 'task',
+          [Entry.sequelize.fn('date_format', Entry.sequelize.col('entry_date'), '%Y-%m-%dT%TZ'), 'ed'],
+          [Entry.sequelize.fn('date_format', Entry.sequelize.col('entry_date'), '%a %D %b, %Y'), 'ed2']],
+        order: [['entry_date', 'DESC']],
+        limit: limit,
+        offset: offset,
+        raw: true
+      }).then(function (entries) {
+        var pages = Math.ceil(entries.count / limit);
+        cnt = entries.count;
+        entries = entries.rows;
+
+        res.render('../views/browse', {
+          APP_TITLE: process.env.APP_TITLE,
+          user: req.user,
+          entries: entries,
+          cnt: cnt,
+          pages: pages,
+          current_page: page
+        });
+
+      });
     });
 
     app.get('/add', function(req, res) {

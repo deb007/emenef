@@ -8,3 +8,6 @@ span.badge[data-badge-caption]::after {
   vertical-align: middle !important;
   padding-bottom: 3px;
 }
+.fl::first-letter {
+  text-transform:capitalize;
+}
