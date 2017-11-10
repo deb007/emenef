@@ -193,7 +193,7 @@ module.exports = function(app, passport, models) {
         var verb = req.query.v;
         var task = req.query.t;
 
-        if(task != ''){
+        if(task && task != ''){
           Entry.findAll({
             where: {status: 1, forecast: 1, verb: verb, task: task},
             attributes: [[Entry.sequelize.fn('MAX', Entry.sequelize.col('entry_date')), 'entry_date'] ,'task'],
