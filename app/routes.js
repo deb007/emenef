@@ -110,22 +110,32 @@ module.exports = function(app, passport, models) {
               if (newItem) {
                 console.log(newItem.id);
                 if(newItem.forecast == 1) {
-                  Entry.findAll({
-                    where: {status: 1, forecast: 1, days_ago:{$gt:0}, verb: req.body.verb, task: req.body.task},
-                    attributes: [[Entry.sequelize.fn('AVG', Entry.sequelize.col('days_ago')), 'days_ago'], 'verb' ,'task'],
-                    raw: true
-                  }).then(function(e) {
-                    if(e[0].days_ago > 0) {
-                      Entry.sequelize.query("UPDATE entries SET next_date = DATE_ADD(entry_date, INTERVAL '"+Math.round(e[0].days_ago)+"' DAY) WHERE id = "+newItem.id)
-                      .spread((results, metadata) => {
-                        console.log("Update done");
-                        console.log(results);
-                      })
-                    }
-                    req.flash('addStatus', 'Successfully added.');
+                  Entry.update(
+                    {next_date: null},
+                    {where: {status: 1, forecast: 1, verb: req.body.verb, task: req.body.task} }
+                  ).then(function(r) {
+                    Entry.findAll({
+                      where: {status: 1, forecast: 1, days_ago:{$gt:0}, verb: req.body.verb, task: req.body.task},
+                      attributes: [[Entry.sequelize.fn('AVG', Entry.sequelize.col('days_ago')), 'days_ago'], 'verb' ,'task'],
+                      raw: true
+                    }).then(function(e) {
+                      if(e[0].days_ago > 0) {
+                        Entry.sequelize.query("UPDATE entries SET next_date = DATE_ADD(entry_date, INTERVAL '"+Math.round(e[0].days_ago)+"' DAY) WHERE id = "+newItem.id)
+                        .spread((results, metadata) => {
+                          console.log("Update done");
+                        })
+                      }
+                      req.flash('addStatus', 'Successfully added.');
+                      res.redirect('/add');
+                      return;
+                    })
+                  }).catch(function(err) {
+                    req.flash('addStatus', 'Could not be added. Please try again later');
                     res.redirect('/add');
                     return;
+
                   })
+
                 } else {
                     req.flash('addStatus', 'Successfully added.');
                     res.redirect('/add');
