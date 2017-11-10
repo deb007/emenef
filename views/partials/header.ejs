@@ -31,9 +31,12 @@
        <div class="nav-wrapper blue accent-4">
          <a href="#" data-activates="slide-out" class="button-collapse show-on-large"><i class="material-icons">menu</i></a>
          <a href="/" class="brand-logo hoverable">&nbsp;<%= APP_TITLE %>&nbsp;</a>
+         <% if (page!= 'login') { %>
          <ul id="nav-mobile" class="right hide-on-med-and-down">
-           <li><a href="/login">Login</a></li>
+           <li><a href="/">Welcome <%= user.fullname %></a></li>
+           <li><a href="/logout">Logout</a></li>
          </ul>
+         <% } %>
        </div>
      </nav>
      </div>
@@ -42,14 +45,15 @@
      <main>
        <div class="container">
 
+         <% if (page!= 'login') { %>
          <ul id="slide-out" class="side-nav">
            <li><div class="user-view">
              <div class="background">
-               <img src="https://cdn.glitch.com/0d2d19c3-06be-4384-8e61-6a593ff403f8%2Fuser-profile-bg.jpg?1509018040782">
+               <img src="images/user-profile-bg.jpg">
              </div>
              <!-- <a href="#!user"><img class="circle" src="images/yuna.jpg"></a> -->
-             <a href="#!name"><span class="white-text name">John Doe</span></a>
-             <a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+             <a href="#"><span class="white-text name"><%= user.fullname %></span></a>
+             <a href="#"><span class="white-text email"><%= user.email %></span></a>
            </div></li>
            <li><a href="/"><i class="material-icons">home</i>Dashboard</a></li>
            <li><a href="/add"><i class="material-icons">add</i>Add</a></li>
@@ -57,3 +61,4 @@
            <li><div class="divider"></div></li>
            <li><a href="/logout"><i class="material-icons">power_settings_new</i>Logout</a></li>
          </ul>
+         <% } %>

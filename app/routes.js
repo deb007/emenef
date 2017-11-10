@@ -1,6 +1,6 @@
 module.exports = function(app, passport, models) {
 
-    app.get('/', function(req, res) {
+    app.get('/', isLoggedIn, function(req, res) {
       var Entry = models.entry;
       var currentDate = new Date();
       var dd_str = currentDate.getDate();
@@ -14,11 +14,11 @@ module.exports = function(app, passport, models) {
         dd_str += ',' + currentDate.getDate();
       }
 
-      Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where status=1 AND memories=1 AND entry_date < CURDATE() AND DATE_FORMAT(entry_date, '%d') IN (" + dd_str + ")",
+      Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where created_by= " + req.user.id + " AND status=1 AND memories=1 AND entry_date < CURDATE() AND DATE_FORMAT(entry_date, '%d') IN (" + dd_str + ")",
         { type: Entry.sequelize.QueryTypes.SELECT})
       .then(function (m_entries) {
 
-        Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(next_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where status=1 AND forecast=1 AND next_date BETWEEN NOW() AND NOW() + INTERVAL 7 DAY ORDER BY next_date",
+        Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(next_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where created_by= " + req.user.id + " AND status=1 AND forecast=1 AND next_date BETWEEN NOW() AND NOW() + INTERVAL 7 DAY ORDER BY next_date",
           { type: Entry.sequelize.QueryTypes.SELECT})
         .then(function (f_entries) {
 
@@ -35,7 +35,7 @@ module.exports = function(app, passport, models) {
     });
 
 
-    app.get('/browse', function(req, res) {
+    app.get('/browse', isLoggedIn, function(req, res) {
       var Entry = models.entry;
       var cnt = 0;
       var limit = 10;
@@ -44,7 +44,7 @@ module.exports = function(app, passport, models) {
       offset = limit * (page - 1);
 
       Entry.findAndCountAll({
-        where:{created_by: 1, status: 1},   //req.user.id
+        where:{created_by: req.user.id, status: 1},
         attributes: ['verb', 'task',
           [Entry.sequelize.fn('date_format', Entry.sequelize.col('entry_date'), '%Y-%m-%dT%TZ'), 'ed'],
           [Entry.sequelize.fn('date_format', Entry.sequelize.col('entry_date'), '%a %D %b, %Y'), 'ed2']],
@@ -69,7 +69,7 @@ module.exports = function(app, passport, models) {
       });
     });
 
-    app.get('/add', function(req, res) {
+    app.get('/add', isLoggedIn, function(req, res) {
       res.render('../views/add-new', {
         APP_TITLE: process.env.APP_TITLE,
         user: req.user,
@@ -80,7 +80,7 @@ module.exports = function(app, passport, models) {
       });
     });
 
-    app.post('/save', function(req, res) {
+    app.post('/save', isLoggedIn, function(req, res) {
       var user = req.user;
       req.checkBody('verb', 'A verb is required').notEmpty();
       req.checkBody('task', 'Task is required').notEmpty();
@@ -104,7 +104,7 @@ module.exports = function(app, passport, models) {
             entry_date: req.body.entry_date,
             days_ago: req.body.days_ago,
             status: req.body.status,
-            created_by: 1                     //user.id
+            created_by: req.user.id
           };
           Entry.create(data).then(function(newItem) {
               if (newItem) {
@@ -112,10 +112,10 @@ module.exports = function(app, passport, models) {
                 if(newItem.forecast == 1) {
                   Entry.update(
                     {next_date: null},
-                    {where: {status: 1, forecast: 1, verb: req.body.verb, task: req.body.task} }
+                    {where: {created_by: req.user.id, status: 1, forecast: 1, verb: req.body.verb, task: req.body.task} }
                   ).then(function(r) {
                     Entry.findAll({
-                      where: {status: 1, forecast: 1, days_ago:{$gt:0}, verb: req.body.verb, task: req.body.task},
+                      where: {created_by: req.user.id, status: 1, forecast: 1, days_ago:{$gt:0}, verb: req.body.verb, task: req.body.task},
                       attributes: [[Entry.sequelize.fn('AVG', Entry.sequelize.col('days_ago')), 'days_ago'], 'verb' ,'task'],
                       raw: true
                     }).then(function(e) {
@@ -171,7 +171,7 @@ module.exports = function(app, passport, models) {
 
     app.get('/auth/facebook/callback',
       passport.authenticate('facebook', {
-          successRedirect : '/add-new',
+          successRedirect : '/',
           failureRedirect : '/login'
       }));
 
@@ -179,7 +179,7 @@ module.exports = function(app, passport, models) {
 
     app.get('/auth/google/callback',
       passport.authenticate('google', {
-              successRedirect : '/add-new',
+              successRedirect : '/',
               failureRedirect : '/login'
       }));
 
@@ -205,7 +205,7 @@ module.exports = function(app, passport, models) {
 
         if(task && task != ''){
           Entry.findAll({
-            where: {status: 1, forecast: 1, verb: verb, task: task},
+            where: {created_by: req.user.id, status: 1, forecast: 1, verb: verb, task: task},
             attributes: [[Entry.sequelize.fn('MAX', Entry.sequelize.col('entry_date')), 'entry_date'] ,'task'],
             group: ['task'],
             order: [['task', 'ASC']],
@@ -217,7 +217,7 @@ module.exports = function(app, passport, models) {
 
         } else {
           Entry.findAll({
-            where: {status: 1, forecast: 1, verb: verb},
+            where: {created_by: req.user.id, status: 1, forecast: 1, verb: verb},
             attributes: [[Entry.sequelize.fn('MAX', Entry.sequelize.col('entry_date')), 'entry_date'] ,'task'],
             group: ['task'],
             order: [['task', 'ASC']],
