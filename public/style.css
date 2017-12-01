@@ -11,3 +11,7 @@ span.badge[data-badge-caption]::after {
 .fl::first-letter {
   text-transform:capitalize;
 }
+.msg {
+  font-weight: bold;
+  color: orange;
+}

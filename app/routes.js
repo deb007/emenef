@@ -230,6 +230,28 @@ module.exports = function(app, passport, models) {
 
       });
 
+      app.get('/api/get_avg', function(req, res) {
+        var Entry = models.entry;
+        var verb = req.query.v;
+        var task = req.query.t;
+
+        if(verb != '' && task != '') {
+          Entry.findAll({
+            where: {created_by: req.user.id, status: 1, forecast: 1, verb: verb, task: task, days_ago:{$gt:0}},
+            attributes: [[Entry.sequelize.fn('AVG', Entry.sequelize.col('days_ago')), 'avg_days_ago'] ,'task'],
+            group: ['task'],
+            order: [['task', 'ASC']],
+            limit: 10,
+            raw: true
+          }).then(function (entries) {
+            res.send(entries);
+          })
+        }
+        else {
+          res.send('');
+        }
+
+      });
 };
 
 // route middleware to make sure a user is logged in

@@ -8,6 +8,89 @@ function validate() {
   }
 }
 
+function show_status() {
+  var v = $('#verb').val();
+  var t = $('#task').val();
+
+  if(v != '' && t != '') {
+    $('#s_verb').text(v);
+    $('#s_task').text(t);
+    $('#s_last_date').text($('#last_date').val());
+    $('#s_days_ago').text($('#days_ago').val());
+
+    $.ajax({
+      type: 'GET',
+      url: '/api/get_avg?v='+v+'&t='+t,
+      success: function(resp) {
+        if(resp[0] && resp[0].avg_days_ago > 0) {
+          var avgd = parseInt(resp[0].avg_days_ago);
+          var mls = 'same as average';
+
+          if(avgd > $('#days_ago').val()) {
+            mls = 'less than average';
+          } else if(avgd < $('#days_ago').val()) {
+            mls = 'more than average';
+          }
+
+          $('#s_usual').text(avgd);
+          $('#s_more_less').text(mls);
+          $('#line2').show();
+        } else {
+          $('#line2').hide();
+        }
+      }
+    })
+
+    if($('#days_ago').val() != '') {
+      $('#div_status').show();
+    }
+  }
+  else {
+    $('#div_status').hide();
+  }
+}
+
+function get_diff() {
+  var one_day=1000*60*60*24;
+  var ld = $('#last_date').val();
+  if(ld != '') {
+    var ed = $('#entry_date').val();
+    var da = Date.parse(ed) - Date.parse(ld);
+    return Math.round(da/one_day);
+  } else {
+    return '';
+  }
+}
+
+function set_values(task, edate, dataTasks) {
+  $('#task').val(task);
+  $('#last_date').val(edate);
+  $('#days_ago').val(get_diff());
+  show_status();
+
+  if(dataTasks == '') {
+    $('#task').autocomplete({
+      data: {}
+    });
+  } else {
+    $('#task').autocomplete({
+      data: dataTasks,
+      limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+      onAutocomplete: function(valT) {
+        var res = valT.split(". Last entry on:");
+        set_values(res[0], res[1], '');
+      },
+      minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
+    });
+  }
+}
+
+$( "#entry_date" ).change(function() {
+  $('#days_ago').val(get_diff());
+  show_status();
+})
+
+
 $(document).ready(function(){
   $(".button-collapse").sideNav();
   $('select').material_select();
@@ -17,31 +100,10 @@ $(document).ready(function(){
       type: 'GET',
       url: '/api/get_tasks?v='+$('#verb').val()+'&t='+$('#task').val(),
       success: function(resp) {
-
-        var dataTasks = {};
-        $('#task').val(resp[0].task);
-        $('#last_date').val(resp[0].entry_date);
-        $('#days_ago').val(get_diff());
-        $('#task').autocomplete({
-          data: {}
-        });
+        set_values(resp[0].task, resp[0].entry_date, '');
       }
     })
   }
-
-  $( "#entry_date" ).change(function() {
-    $('#days_ago').val(get_diff());
-  })
-
-  function get_diff() {
-    var one_day=1000*60*60*24;
-    var ld = $('#last_date').val();
-    if(ld != '') {
-      var ed = $('#entry_date').val();
-      var da = Date.parse(ed) - Date.parse(ld);
-      return Math.round(da/one_day);
-    }
-  };
 
   $(function() {
     $.ajax({
@@ -51,7 +113,7 @@ $(document).ready(function(){
 
         var dataVerbs = {};
         for (var i = 0; i < response.length; i++) {
-          dataVerbs[response[i].verb] = null; //countryArray[i].flag or null
+          dataVerbs[response[i].verb] = null;
         }
 
         $('#verb').autocomplete({
@@ -65,33 +127,16 @@ $(document).ready(function(){
 
                 var dataTasks = {};
                 if(resp.length == 1) {
-                  $('#task').val(resp[0].task);
-                  $('#last_date').val(resp[0].entry_date);
-                  $('#days_ago').val(get_diff());
-                  $('#task').autocomplete({
-                    data: {}
-                  });
+                  set_values(resp[0].task, resp[0].entry_date, '');
                 }
                 else {
-                  $('#task').val('');
-                  $('#last_date').val('');
-                  $('#days_ago').val('');
+
                   for (var i = 0; i < resp.length; i++) {
                     var strkey = resp[i].task + '. Last entry on:' + resp[i].entry_date;
                     dataTasks[strkey] = null;
                   }
+                  set_values('', '', dataTasks);
 
-                  $('#task').autocomplete({
-                    data: dataTasks,
-                    limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
-                    onAutocomplete: function(valT) {
-                      var res = valT.split(". Last entry on:");
-                      $('#task').val(res[0]);
-                      $('#last_date').val(res[1]);
-                      $('#days_ago').val(get_diff());
-                    },
-                    minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
-                  });
                 }
               }
             });
