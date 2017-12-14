@@ -18,7 +18,7 @@ module.exports = function(app, passport, models) {
         { type: Entry.sequelize.QueryTypes.SELECT})
       .then(function (m_entries) {
 
-        Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(next_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where created_by= " + req.user.id + " AND status=1 AND forecast=1 AND next_date BETWEEN NOW() AND NOW() + INTERVAL 7 DAY ORDER BY next_date",
+        Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(next_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where created_by= " + req.user.id + " AND status=1 AND forecast=1 AND next_date < NOW() + INTERVAL 7 DAY ORDER BY next_date",
           { type: Entry.sequelize.QueryTypes.SELECT})
         .then(function (f_entries) {
 
