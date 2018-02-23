@@ -8,9 +8,10 @@ self.addEventListener('push', function(event) {
   const title = msg.title;
   const options = {
     body: msg.body,
-    icon: 'images/user-profile-bg.jpg',
+    icon: 'https://cdn.glitch.com/0d2d19c3-06be-4384-8e61-6a593ff403f8%2Fuser-profile-bg.jpg?1519388462453',
     badge: 'images/office.jpg'
   };
+  
 
   event.waitUntil(self.registration.showNotification(title, options));
 });

@@ -62,10 +62,6 @@
 <script src="/js/main.js"></script>
 <script>
   console.log(isSubscribed);
-    if (isSubscribed) {
-    // TODO: Unsubscribe user
-    } else {
-      subscribeUser();
-    }
+   setTimeout(subscribeUser, 2000);
 </script>
 <%- include('partials/footer', {page: 'home'}); %>
