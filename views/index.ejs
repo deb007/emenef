@@ -58,11 +58,14 @@
            </a>
         </div>
 
-<%- include('partials/footer', {page: 'home'}); %>
+
+<script src="/js/main.js"></script>
 <script>
+  console.log(isSubscribed);
     if (isSubscribed) {
     // TODO: Unsubscribe user
     } else {
       subscribeUser();
     }
 </script>
+<%- include('partials/footer', {page: 'home'}); %>

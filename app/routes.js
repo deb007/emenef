@@ -1,5 +1,35 @@
 module.exports = function(app, passport, models) {
 
+  
+  app.post('/subscribe', isLoggedIn, function(req, res) {
+    var Subscriber = models.subscriber;
+    if (req.user && req.user.id) {
+      Subscriber.findOne({
+        attributes: ['id'],
+        where:{user_id: req.user.id}
+      }).then(function (item) {
+        if(item){
+          console.log('Existing subscriber' + req.user.id);
+          item.updateAttributes({subscription: req.body ? JSON.stringify(req.body) : ''});
+          res.status(200).send({success: true});
+        } else {
+          console.log('New subscriber' + req.user.id);
+          var data = {
+            user_id: req.user.id,
+            subscription: req.body? JSON.stringify(req.body) : ''
+          };
+          Subscriber.create(data).then(function(newItem) {
+            console.log(newItem);
+            res.status(200).send({success: true});
+          })    
+        }
+      });
+
+    } else {
+      res.status(200).send({success: true});
+    }
+  });
+
     app.get('/', isLoggedIn, function(req, res) {
       var Entry = models.entry;
       var currentDate = new Date();
