@@ -59,3 +59,10 @@
         </div>
 
 <%- include('partials/footer', {page: 'home'}); %>
+<script>
+    if (isSubscribed) {
+    // TODO: Unsubscribe user
+    } else {
+      subscribeUser();
+    }
+</script>
