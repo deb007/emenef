@@ -54,7 +54,7 @@ app.use(express.static('public'));
 require('./app/routes.js')(app, passport, models); // load our routes and pass in our app and fully configured passport
 
 
-// sendEntryNoti();
+//sendEntryNoti();
 
 var schedule = require('node-schedule');
 var j = schedule.scheduleJob('0 16 * * *', function(){
