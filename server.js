@@ -18,7 +18,14 @@ var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var session      = require('express-session');
 var redisStore = require('connect-redis')(session);
-//var client  = redis.createClient();
+var client = redis.createClient(14696, 'redis-14696.c16.us-east-1-3.ec2.cloud.redislabs.com', {no_ready_check: true});
+client.auth('CXEVRKQuHBKTd2uPX3UzWFEypIfCt0jI', function (err) {
+    if (err) throw err;
+});
+
+client.on('connect', function() {
+    console.log('Connected to Redis');
+});
 const webpush    = require('web-push');
 
 //Models
@@ -44,6 +51,7 @@ app.set('view engine', 'ejs'); // set up ejs for templating
 // required for passport
 app.use(session({
     secret: 'thisismysecret1thisismysecret2thisismysecret',
+    store: new redisStore({ host: 'redis-14696.c16.us-east-1-3.ec2.cloud.redislabs.com', port: 14696, client: client,ttl :  260}),
     resave: false,
     saveUninitialized: false,  
     cookie: {maxAge: 864000 * 1000}
