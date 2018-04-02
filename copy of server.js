@@ -6,7 +6,6 @@
 // get all the tools we need
 require('dotenv').config();
 var express   = require('express');
-var redis   = require("redis");
 var app       = express();
 var port      = process.env.PORT || 8080;
 var passport  = require('passport');
@@ -17,8 +16,6 @@ var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var session      = require('express-session');
-var redisStore = require('connect-redis')(session);
-//var client  = redis.createClient();
 const webpush    = require('web-push');
 
 //Models
@@ -44,8 +41,8 @@ app.set('view engine', 'ejs'); // set up ejs for templating
 // required for passport
 app.use(session({
     secret: 'thisismysecret1thisismysecret2thisismysecret',
-    resave: false,
-    saveUninitialized: false,  
+    resave: true,
+    saveUninitialized: true,  
     cookie: {maxAge: 864000 * 1000}
 }));
 app.use(passport.initialize());
