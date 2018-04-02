@@ -30,8 +30,7 @@
     "sendgrid": "^5.2.3",
     "sequelize": "^4.8.2",
     "web-push": "^3.2.5",
-    "connect-redis": "^3.3.3",
-    "redis": "^2.8.0"
+    "connect-redis": "^3.3.3"
   },
   "repository": {
     "url": "https://google.com/"
