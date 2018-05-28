@@ -19,6 +19,18 @@ $(document).ready(function(){
   jQuery.timeago.settings.allowFuture = true;
   $("time.timeago").timeago();
   $(".button-collapse").sideNav();
+  <% if(page == 'home') { %>
+    $(document).ready(function(){
+        $.ajax({
+        url: "/get_orphans/",
+        context: document.body
+      }).done(function(data) {
+          console.log(data);
+          if(data && 
+          $('#orphan').html
+      });
+    })
+  <% } %>
 })
 </script>
 <% } else if(page == 'add') { %>

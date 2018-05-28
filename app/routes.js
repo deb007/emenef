@@ -64,6 +64,18 @@ module.exports = function(app, passport, models) {
 
     });
 
+    app.get('/get_orphans', isLoggedIn, function(req, res) {
+      var Entry = models.entry;
+      
+      Entry.sequelize.query("SELECT * FROM orphans where created_by= " + req.user.id + " AND entry_date < NOW() - INTERVAL 30 DAY order by RAND() LIMIT 1",
+        { type: Entry.sequelize.QueryTypes.SELECT})
+      .then(function (entries) {
+        console.log(entries);
+        res.send(entries);
+        
+      })
+
+    });
 
     app.get('/browse', isLoggedIn, function(req, res) {
       var Entry = models.entry;
