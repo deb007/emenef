@@ -27,7 +27,8 @@ $(document).ready(function(){
       }).done(function(data) {
           if(data && data != '') {
             var arr = data[0].vt.split('_');
-            $('#orphan').html('You last made an entry for <b>'+data[0].vt+'</b> on '+data[0].entry_date+'. Would you like to <a href="/add?verb='+arr[0]+'&task='+arr[1]+'">add again</a>?');
+            $('#orphan').html('You last <b>'+arr[0]+' '+arr[1]+'</b> on <time class="timeago" id="to" datetime="'+data[0].entry_date+'">'+data[0].entry_date+'</time>. Would you like to <a href="/add?verb='+arr[0]+'&task='+arr[1]+'">add again</a>?');
+            $("time.timeago").timeago();
           }
       });
     })
