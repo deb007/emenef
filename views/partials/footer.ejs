@@ -25,9 +25,10 @@ $(document).ready(function(){
         url: "/get_orphans/",
         context: document.body
       }).done(function(data) {
-          console.log(data);
-          if(data && 
-          $('#orphan').html
+          if(data && data != '') {
+            var arr = data[0].vt.split('_');
+            $('#orphan').html('You last made an entry for <b>'+data[0].vt+'</b> on '+data[0].entry_date+'. Would you like to <a href="/add?verb='+arr[0]+'&task='+arr[1]+'">add again</a>?');
+          }
       });
     })
   <% } %>
