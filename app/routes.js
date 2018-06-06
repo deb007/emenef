@@ -84,9 +84,17 @@ module.exports = function(app, passport, models) {
       var offset = 0;
       var page = req.query.page ? req.query.page : 1;
       offset = limit * (page - 1);
+      
+      var whereClause = {created_by: req.user.id, status: 1};
+      if(req.query.verb) {
+        whereClause.verb = req.query.verb;
+      }
+      if(req.query.task) {
+        whereClause.task = {$like : '%' + req.query.task + ';
+      }
 
       Entry.findAndCountAll({
-        where:{created_by: req.user.id, status: 1},
+        where:whereClause,
         attributes: ['verb', 'task',
           [Entry.sequelize.fn('date_format', Entry.sequelize.col('entry_date'), '%Y-%m-%dT%TZ'), 'ed'],
           [Entry.sequelize.fn('date_format', Entry.sequelize.col('entry_date'), '%a %D %b, %Y'), 'ed2']],
