@@ -90,7 +90,7 @@ module.exports = function(app, passport, models) {
         whereClause.verb = req.query.verb;
       }
       if(req.query.task) {
-        whereClause.task = {$like : '%' + req.query.task + ';
+        whereClause.task = {$like : '%' + req.query.task + '%'};
       }
 
       Entry.findAndCountAll({
