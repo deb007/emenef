@@ -58,14 +58,24 @@ require('./app/routes.js')(app, passport, models); // load our routes and pass i
 
 var async = require('async');
 
-testFunc();
+testFunc(); 
 
 function testFunc() {
   var Entry = models.entry;
   async.parallel([
     function(callback) {
+      Entry.count().then(function(c) {
+        console.log('Total entries in table: ' + c);
+        callback(null, {'all':c});
+      })
     },
     function(callback) {
+      Entry.count({
+        where: {created_by:1, status: 1}
+      }).then(function(c1) {
+        console.log('Total entries in table by user_id 1 is: ' + c1);
+        callback(null, {'all1':c1});
+      })
     }
   ], function(err, results) {
     console.log(results);
