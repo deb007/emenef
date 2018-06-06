@@ -56,6 +56,22 @@ app.use(express.static('public'));
 require('./app/routes.js')(app, passport, models); // load our routes and pass in our app and fully configured passport
 
 
+var async = require('async');
+
+testFunc();
+
+function testFunc() {
+  var Entry = models.entry;
+  async.parallel([
+    function(callback) {
+    },
+    function(callback) {
+    }
+  ], function(err, results) {
+    console.log(results);
+  });
+}
+
 //sendEntryNoti();
 
 var schedule = require('node-schedule');
