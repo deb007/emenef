@@ -8,45 +8,55 @@ function validate() {
   }
 }
 
-function show_status() {
-  var v = $('#verb').val();
-  var t = $('#task').val();
-
-  if(v != '' && t != '') {
-    $('#s_verb').text(v);
-    $('#s_task').text(t);
+function show_status(isNew) {
+  if (isNew) {
+    alert('New task');
+    $('#last_date').val('');
+    $('#days_ago').val('');
     $('#s_last_date').text($('#last_date').val());
     $('#s_days_ago').text($('#days_ago').val());
-
-    $.ajax({
-      type: 'GET',
-      url: '/api/get_avg?v='+v+'&t='+t,
-      success: function(resp) {
-        if(resp[0] && resp[0].avg_days_ago > 0) {
-          var avgd = parseInt(resp[0].avg_days_ago);
-          var mls = 'same as average';
-
-          if(avgd > $('#days_ago').val()) {
-            mls = 'less than average';
-          } else if(avgd < $('#days_ago').val()) {
-            mls = 'more than average';
-          }
-
-          $('#s_usual').text(avgd);
-          $('#s_more_less').text(mls);
-          $('#line2').show();
-        } else {
-          $('#line2').hide();
-        }
-      }
-    })
-
-    if($('#days_ago').val() != '') {
-      $('#div_status').show();
-    }
+    $('#div_status').hide();
   }
   else {
-    $('#div_status').hide();
+    var v = $('#verb').val();
+    var t = $('#task').val();
+  
+    if(v != '' && t != '') {
+      $('#s_verb').text(v);
+      $('#s_task').text(t);
+      $('#s_last_date').text($('#last_date').val());
+      $('#s_days_ago').text($('#days_ago').val());
+  
+      $.ajax({
+        type: 'GET',
+        url: '/api/get_avg?v='+v+'&t='+t,
+        success: function(resp) {
+          if(resp[0] && resp[0].avg_days_ago > 0) {
+            var avgd = parseInt(resp[0].avg_days_ago);
+            var mls = 'same as average';
+  
+            if(avgd > $('#days_ago').val()) {
+              mls = 'less than average';
+            } else if(avgd < $('#days_ago').val()) {
+              mls = 'more than average';
+            }
+  
+            $('#s_usual').text(avgd);
+            $('#s_more_less').text(mls);
+            $('#line2').show();
+          } else {
+            $('#line2').hide();
+          }
+        }
+      })
+  
+      if($('#days_ago').val() != '') {
+        $('#div_status').show();
+      }
+    }
+    else {
+      $('#div_status').hide();
+    }
   }
 }
 
