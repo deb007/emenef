@@ -29,7 +29,7 @@
                     </div>
                     <div class="input-field col s6">
                       <i class="material-icons prefix">mode_edit</i>
-                      <input placeholder="What did you do.." id="task" name="task" type="text" value='<%= task %>' class="validate" autocomplete="off">
+                      <input placeholder="What did you do.." id="task" name="task" type="text" onchange="set_values('', '', ''); show_status(); return false;" value='<%= task %>' class="validate" autocomplete="off">
                       <label for="task">Task</label>
                     </div>
                   </div>
