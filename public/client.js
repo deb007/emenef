@@ -79,6 +79,8 @@ function set_values(task, edate, dataTasks) {
       data: dataTasks,
       limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
       onAutocomplete: function(valT) {
+        console.log("valT");
+        console.log(valT);
         var res = valT.split(". Last entry on:");
         set_values(res[0], res[1], '');
       },
