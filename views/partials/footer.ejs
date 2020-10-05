@@ -25,6 +25,7 @@ $(document).ready(function(){
         url: "/get_orphans/",
         context: document.body
       }).done(function(data) {
+          alert(data);
           if(data && data != '') {
             var arr = data[0].vt.split('_');
             $('#orphan').html('You last <b>'+arr[0]+' '+arr[1]+'</b> <time class="timeago" id="to" datetime="'+data[0].entry_date+'" title="'+data[0].entry_date+'">'+data[0].entry_date+'</time>. Would you like to <a href="/add?verb='+arr[0]+'&task='+arr[1]+'">add again</a>?');
