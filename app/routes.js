@@ -66,7 +66,7 @@ module.exports = function(app, passport, models) {
 
     app.get('/get_orphans', isLoggedIn, function(req, res) {
       res.send({});
-      /*
+      
       var Entry = models.entry;
       
       Entry.sequelize.query("SELECT * FROM orphans where created_by= " + req.user.id + " AND entry_date < NOW() - INTERVAL 30 DAY order by RAND() LIMIT 1",
@@ -76,7 +76,7 @@ module.exports = function(app, passport, models) {
         res.send(entries);
         
       })
-      */
+      
 
     });
 
