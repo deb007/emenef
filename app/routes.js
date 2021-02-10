@@ -3,7 +3,7 @@ module.exports = function(app, passport, models) {
   app.get('/test', function(req, res) {
     setTimeout(function() {
       res.status(200).send({success:true});
-    }, 300000);
+    }, 30000);
   })
   
   app.post('/subscribe', isLoggedIn, function(req, res) {
