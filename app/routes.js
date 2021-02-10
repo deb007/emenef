@@ -1,5 +1,8 @@
 module.exports = function(app, passport, models) {
 
+  app.get('/test', function(req, res) {
+    res.status(200).send({success:true});
+  })
   
   app.post('/subscribe', isLoggedIn, function(req, res) {
     var Subscriber = models.subscriber;
