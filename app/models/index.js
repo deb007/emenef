@@ -11,7 +11,7 @@ var sequelize = new Sequelize(process.env.DB_DB, process.env.DB_USER, process.en
     }
   },
   pool: {
-    max: 5,
+    max: 10,
     min: 0,
     idle: 10000
   }

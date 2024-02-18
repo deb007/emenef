@@ -53,6 +53,7 @@ app.use(flash());
 app.use(express.static('public'));
 
 // routes ======================================================================
+console.log("here1");
 require('./app/routes.js')(app, passport, models); // load our routes and pass in our app and fully configured passport
 
 
