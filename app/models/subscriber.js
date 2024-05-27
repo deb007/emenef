@@ -1,28 +1,26 @@
-module.exports = function(sequelize, Sequelize) {
-
-    var Subscriber = sequelize.define('subscriber', {
-
+module.exports = (sequelize, DataTypes) => {
+    const Subscriber = sequelize.define('Subscriber', {
         id: {
             autoIncrement: true,
             primaryKey: true,
-            type: Sequelize.INTEGER
+            type: DataTypes.INTEGER
         },
-
         user_id: {
-            type: Sequelize.INTEGER,
-            notEmpty: true
+            type: DataTypes.INTEGER,
+            allowNull: false
         },
-
         subscription: {
-            type: Sequelize.TEXT
+            type: DataTypes.TEXT
         }
+    }, {
+        indexes: [{ fields: ['user_id'] }]
+    });
 
-    },
-    {
-        indexes: [{ fields: ['user_id']}]
-    }
-);
+    // Define any associations here if necessary
+    Subscriber.associate = function(models) {
+        // Example association
+        // Subscriber.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
+    };
 
     return Subscriber;
-
-}
+};

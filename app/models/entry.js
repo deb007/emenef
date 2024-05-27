@@ -1,57 +1,48 @@
-module.exports = function(sequelize, Sequelize) {
-
-    var Entry = sequelize.define('entry', {
-
+module.exports = (sequelize, DataTypes) => {
+    const Entry = sequelize.define('Entry', {
         id: {
             autoIncrement: true,
             primaryKey: true,
-            type: Sequelize.INTEGER
+            type: DataTypes.INTEGER
         },
-
         verb: {
-            type: Sequelize.STRING,
-            notEmpty: true
+            type: DataTypes.STRING,
+            allowNull: false
         },
-
         task: {
-            type: Sequelize.TEXT
+            type: DataTypes.TEXT
         },
-
         memories: {
-            type: Sequelize.INTEGER,
-            defaultValue:0
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         },
-
         forecast: {
-            type: Sequelize.INTEGER,
-            defaultValue:0
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         },
-
         entry_date: {
-            type: Sequelize.DATE
+            type: DataTypes.DATE
         },
-
         days_ago: {
-            type: Sequelize.INTEGER,
-            defaultValue:0
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         },
-
         next_date: {
-            type: Sequelize.DATE
+            type: DataTypes.DATE
         },
-
         status: {
-            type: Sequelize.INTEGER,
-            defaultValue:1
+            type: DataTypes.INTEGER,
+            defaultValue: 1
         },
-
         created_by: {
-            type: Sequelize.INTEGER
+            type: DataTypes.INTEGER
         }
-
-
     });
 
-    return Entry;
+    // Add any associations if necessary
+    Entry.associate = function(models) {
+        // associations can be defined here
+    };
 
-}
+    return Entry;
+};

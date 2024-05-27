@@ -1,25 +1,25 @@
-module.exports = function(sequelize, Sequelize) {
-
-    var Cron = sequelize.define('cron', {
-
+module.exports = (sequelize, DataTypes) => {
+    const Cron = sequelize.define('Cron', {
         id: {
             autoIncrement: true,
             primaryKey: true,
-            type: Sequelize.INTEGER
+            type: DataTypes.INTEGER
         },
-
         title: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             notEmpty: true
         },
-
         status: {
-            type: Sequelize.INTEGER,
+            type: DataTypes.INTEGER,
             defaultValue: 0,
             notEmpty: true
         }
     });
 
-    return Cron;
+    // If there are associations to define, add them here
+    // Cron.associate = function(models) {
+    //     // associations can be defined here
+    // };
 
-}
+    return Cron;
+};

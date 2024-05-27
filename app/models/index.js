@@ -1,25 +1,26 @@
-var fs = require("fs");
-var path = require("path");
-var Sequelize = require("sequelize");
-var sequelize = new Sequelize({
+const Sequelize = require("sequelize");
+const path = require("path");
+const fs = require("fs");
+
+// SQLite configuration
+const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: path.join(__dirname, 'emenef.db') // path to your SQLite file
 });
-var db = {};
+
+const db = {};
 
 
 fs
     .readdirSync(__dirname)
-    .filter(function(file) {
-        return (file.indexOf(".") !== 0) && (file !== "index.js");
-    })
-    .forEach(function(file) {
-        var model = sequelize.import(path.join(__dirname, file));
+    .filter(file => (file.indexOf(".") !== 0) && (file !== "index.js"))
+    .forEach(file => {
+        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
         db[model.name] = model;
     });
 
-Object.keys(db).forEach(function(modelName) {
-    if ("associate" in db[modelName]) {
+Object.keys(db).forEach(modelName => {
+    if (db[modelName].associate) {
         db[modelName].associate(db);
     }
 });
