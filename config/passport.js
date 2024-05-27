@@ -93,7 +93,12 @@ module.exports = function(passport, user) {
               user.updateAttributes({
                 last_login: Date.now(),
                 login_count: user.login_count+1
-              })
+              }).then(updatedUser => {
+                  return done(null, updatedUser);
+              }).catch(err => {
+                  console.error("Error updating user:", err);
+                  return done(err, null);
+              });
               return done(null, user);
             } else {
               var data = {
@@ -112,9 +117,15 @@ module.exports = function(passport, user) {
                   if (newUser) {
                       return done(null, newUser);
                   }
+              }).catch(err => {
+                  console.error("Error creating user:", err);
+                  return done(err, null);
               });
             }
-          })
+          }).catch(err => {
+              console.error("Error finding user:", err);
+              return done(err, null);
+          });
         });
     }));
 

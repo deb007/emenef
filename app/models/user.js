@@ -9,38 +9,16 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             notEmpty: true
         },
-        username: {
-            type: DataTypes.TEXT
-        },
         email: {
             type: DataTypes.STRING,
             validate: {
                 isEmail: true
             }
         },
-        fb_profile_id: {
-            type: DataTypes.STRING
-        },
-        fb_token: {
-            type: DataTypes.STRING
-        },
-        google_profile_id: {
-            type: DataTypes.STRING
-        },
-        google_token: {
-            type: DataTypes.STRING
-        },
-        gender: {
-            type: DataTypes.STRING
-        },
         last_login: {
             type: DataTypes.DATE
         },
         login_count: {
-            type: DataTypes.INTEGER,
-            defaultValue: 0
-        },
-        member_type: {
             type: DataTypes.INTEGER,
             defaultValue: 0
         },
