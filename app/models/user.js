@@ -25,7 +25,19 @@ module.exports = (sequelize, DataTypes) => {
         status: {
             type: DataTypes.ENUM('active', 'inactive'),
             defaultValue: 'active'
+        },
+        created_at: {
+            type: DataTypes.DATE,
+            field: 'created_at' // Specify the column name in your database
+        },
+        updated_at: {
+            type: DataTypes.DATE,
+            field: 'updated_at' // Specify the column name in your database
         }
+    }, {
+        timestamps: true, // Enable automatic timestamps
+        createdAt: 'created_at', // Specify the field name for createdAt
+        updatedAt: 'updated_at' // Specify the field name for updatedAt
     });
 
     // If you have associations, define them here
