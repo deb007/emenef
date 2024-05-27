@@ -39,10 +39,5 @@ module.exports = (sequelize, DataTypes) => {
         }
     });
 
-    // Add any associations if necessary
-    Entry.associate = function(models) {
-        // associations can be defined here
-    };
-
     return Entry;
 };
