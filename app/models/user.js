@@ -1,71 +1,59 @@
-module.exports = function(sequelize, Sequelize) {
-
-    var User = sequelize.define('user', {
-
+module.exports = (sequelize, DataTypes) => {
+    const User = sequelize.define('user', {
         id: {
             autoIncrement: true,
             primaryKey: true,
-            type: Sequelize.INTEGER
+            type: DataTypes.INTEGER
         },
-
         fullname: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             notEmpty: true
         },
-
         username: {
-            type: Sequelize.TEXT
+            type: DataTypes.TEXT
         },
-
         email: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             validate: {
                 isEmail: true
             }
         },
-
         fb_profile_id: {
-            type: Sequelize.STRING
+            type: DataTypes.STRING
         },
-
         fb_token: {
-            type: Sequelize.STRING
+            type: DataTypes.STRING
         },
-
         google_profile_id: {
-            type: Sequelize.STRING
+            type: DataTypes.STRING
         },
-
         google_token: {
-            type: Sequelize.STRING
+            type: DataTypes.STRING
         },
-
         gender: {
-            type: Sequelize.STRING
+            type: DataTypes.STRING
         },
-
         last_login: {
-            type: Sequelize.DATE
+            type: DataTypes.DATE
         },
-
         login_count: {
-            type: Sequelize.INTEGER,
-            defaultValue:0
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         },
-
         member_type: {
-            type: Sequelize.INTEGER,
-            defaultValue:0
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         },
-
         status: {
-            type: Sequelize.ENUM('active', 'inactive'),
+            type: DataTypes.ENUM('active', 'inactive'),
             defaultValue: 'active'
         }
-
-
     });
 
-    return User;
+    // If you have associations, define them here
+    User.associate = function(models) {
+        // associations can be defined here
+    };
 
-}
+    return User;
+};
