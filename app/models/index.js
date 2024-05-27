@@ -1,20 +1,9 @@
 var fs = require("fs");
 var path = require("path");
 var Sequelize = require("sequelize");
-var sequelize = new Sequelize(process.env.DB_DB, process.env.DB_USER, process.env.DB_PWD, {
-  host: process.env.DB_HOST,
-  dialect: 'mysql',
-  ssl: process.env.DB_ENABLE_SSL,
-  dialectOptions: {
-    ssl: process.env.DB_ENABLE_SSL && {
-      require: true
-    }
-  },
-  pool: {
-    max: 10,
-    min: 0,
-    idle: 10000
-  }
+var sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: path.join(__dirname, 'emenef.db') // path to your SQLite file
 });
 var db = {};
 
