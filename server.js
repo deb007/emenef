@@ -27,8 +27,6 @@ models.sequelize.sync().then(function() {
 }).catch(function(err) {
     console.log(err, "Something went wrong with the Database Update!");
 });
-console.log(models.user);
-process.exit();
 
 require('./config/passport')(passport, models.user); // pass passport for configuration
 
@@ -64,7 +62,7 @@ var async = require('async');
 testFunc(); 
 
 function testFunc() {
-  var Entry = models.entry;
+  var Entry = models.Entry;
   async.parallel([
     function(callback) {
       Entry.count().then(function(c) {
