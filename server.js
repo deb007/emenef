@@ -27,6 +27,7 @@ models.sequelize.sync().then(function() {
 }).catch(function(err) {
     console.log(err, "Something went wrong with the Database Update!");
 });
+console.log(models.user);
 process.exit();
 
 require('./config/passport')(passport, models.user); // pass passport for configuration
