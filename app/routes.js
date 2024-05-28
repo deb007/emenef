@@ -48,15 +48,34 @@ module.exports = function(app, passport, models) {
         currentDate.setDate(currentDate.getDate() - 1);
         dd_str += ',' + currentDate.getDate();
       }
+      const userId = req.user.id;
+      const ddStr = dd_str;
+      const memoryEntriesQuery = `
+        SELECT verb, task, strftime('%Y-%m-%dT%H:%M:%SZ', entry_date) AS ed, strftime('%a %d %b, %Y', entry_date) AS ed2 
+        FROM entries 
+        WHERE created_by = ? AND status = 1 AND memories = 1 AND entry_date < date('now') 
+        AND strftime('%d', entry_date) IN (?)
+      `;
 
-      Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(entry_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where created_by= " + req.user.id + " AND status=1 AND memories=1 AND entry_date < CURDATE() AND DATE_FORMAT(entry_date, '%d') IN (" + dd_str + ")",
-        { type: Entry.sequelize.QueryTypes.SELECT})
-      .then(function (m_entries) {
+      const forecastEntriesQuery = `
+        SELECT verb, task, strftime('%Y-%m-%dT%H:%M:%SZ', next_date) AS ed, strftime('%a %d %b, %Y', entry_date) AS ed2 
+        FROM entries 
+        WHERE created_by = ? AND status = 1 AND forecast = 1 AND next_date < datetime('now', '+7 days') 
+        ORDER BY next_date
+      `;
 
-        Entry.sequelize.query("SELECT verb, task, DATE_FORMAT(next_date, '%Y-%m-%dT%TZ') AS ed, DATE_FORMAT(entry_date, '%a %D %b, %Y') AS ed2 FROM entries where created_by= " + req.user.id + " AND status=1 AND forecast=1 AND next_date < NOW() + INTERVAL 7 DAY ORDER BY next_date",
-          { type: Entry.sequelize.QueryTypes.SELECT})
-        .then(function (f_entries) {
-
+      Entry.sequelize.query(memoryEntriesQuery, {
+        replacements: [userId, ddStr],
+        type: Entry.sequelize.QueryTypes.SELECT
+      })
+      .then(m_entries => {
+        // Fetch forecast entries
+        return Entry.sequelize.query(forecastEntriesQuery, {
+          replacements: [userId],
+          type: Entry.sequelize.QueryTypes.SELECT
+        })
+        .then(f_entries => {
+          // Render the view with fetched entries
           res.render('../views/index', {
             APP_TITLE: process.env.APP_TITLE,
             user: req.user,
@@ -66,6 +85,10 @@ module.exports = function(app, passport, models) {
           });
         })
       })
+      .catch(err => {
+        console.error("Error executing queries:", err);
+        res.status(500).send("Internal Server Error");
+      });
 
     });
 
