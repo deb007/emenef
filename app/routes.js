@@ -87,8 +87,6 @@ module.exports = function(app, passport, models) {
           type: Entry.sequelize.QueryTypes.SELECT
         })
         .then(f_entries => {
-          console.log("f entries.....")
-          console.log(f_entries)
           // Render the view with fetched entries
           res.render('../views/index', {
             APP_TITLE: process.env.APP_TITLE,
@@ -295,8 +293,8 @@ module.exports = function(app, passport, models) {
       }));
 
 
-      app.get('/api/get_verbs', function(req, res) {
-        var Entry = models.entry;
+      app.get('/api/get_verbs', isLoggedIn, function(req, res) {
+        var Entry = models.Entry;
         Entry.findAll({
           where: {status: 1},
           attributes: [Entry.sequelize.fn('DISTINCT', Entry.sequelize.col('verb')) ,'verb'],
@@ -309,8 +307,8 @@ module.exports = function(app, passport, models) {
 
       });
 
-      app.get('/api/get_tasks', function(req, res) {
-        var Entry = models.entry;
+      app.get('/api/get_tasks', isLoggedIn, function(req, res) {
+        var Entry = models.Entry;
         var verb = req.query.v;
         var task = req.query.t;
 
@@ -341,8 +339,8 @@ module.exports = function(app, passport, models) {
 
       });
 
-      app.get('/api/get_avg', function(req, res) {
-        var Entry = models.entry;
+      app.get('/api/get_avg', isLoggedIn, function(req, res) {
+        var Entry = models.Entry;
         var verb = req.query.v;
         var task = req.query.t;
 
