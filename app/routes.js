@@ -287,6 +287,7 @@ module.exports = function(app, passport, models) {
       var Entry = models.Entry;
       var verb = req.query.v;
       var task = req.query.t;
+      var latestOnly = req.query.latestOnly === 'true'; // Convert string to boolean
 
       // Check if verb and task are provided
       if (!verb || !task) {
@@ -294,26 +295,124 @@ module.exports = function(app, passport, models) {
           return;
       }
 
-      Entry.destroy({
-          where: {
-              created_by: req.user.id,
-              verb: verb,
-              task: task
-          }
-      }).then(function(deletedCount) {
-          if (deletedCount > 0) {
-              req.flash('deleteStatus', deletedCount + ' entries Successfully deleted.');
-              res.status(200).send(deletedCount + ' entries Successfully deleted.');
-          } else {
-              req.flash('deleteStatus', 'No matching entries found.');
-              res.status(404).send('No matching entries found.');
-          }
-      }).catch(function(err) {
-          console.error("Error deleting entries:", err);
-          req.flash('deleteStatus', 'Could not delete. Please try again later.');
-          res.status(500).send('Could not delete. Please try again later.');
-      });
+      // Delete only the latest entry if latestOnly is true
+      if (latestOnly) {
+          Entry.findOne({
+              where: {
+                  created_by: req.user.id,
+                  verb: verb,
+                  task: task
+              },
+              order: [['entry_date', 'DESC']]
+          }).then(function(latestEntry) {
+              if (!latestEntry) {
+                  req.flash('deleteStatus', 'No matching entries found.');
+                  res.status(404).send('No matching entries found.');
+                  return;
+              }
+
+              // Find the previous entry before deleting the latest one
+              Entry.findOne({
+                  where: {
+                      created_by: req.user.id,
+                      verb: verb,
+                      task: task,
+                      entry_date: {
+                          [models.Sequelize.Op.lt]: latestEntry.entry_date // Find entries before the latest one
+                      }
+                  },
+                  order: [['entry_date', 'DESC']]
+              }).then(function(previousEntry) {
+                  // Delete the latest entry
+                  Entry.destroy({
+                      where: {
+                          id: latestEntry.id
+                      }
+                  }).then(function() {
+                      req.flash('deleteStatus', 'Latest entry successfully deleted.');
+
+                      // Update the previous entry's next_date if it exists
+                      if (previousEntry) {
+                          Entry.findAll({
+                              where: {
+                                  created_by: req.user.id,
+                                  status: 1,
+                                  forecast: 1,
+                                  days_ago: {
+                                      [models.Sequelize.Op.gt]: 0
+                                  },
+                                  verb: verb,
+                                  task: task
+                              },
+                              attributes: [[Entry.sequelize.fn('AVG', Entry.sequelize.col('days_ago')), 'days_ago'], 'verb', 'task'],
+                              raw: true
+                          }).then(function(e) {
+                              if (e[0].days_ago > 0) {
+                                  Entry.update({
+                                      next_date: Entry.sequelize.literal(`datetime(entry_date, '+${Math.round(e[0].days_ago)} days')`)
+                                  }, {
+                                      where: {
+                                          id: previousEntry.id
+                                      }
+                                  }).then(function() {
+                                      console.log("Previous entry's next_date updated.");
+                                      res.status(200).send('Previous entry\'s next_date updated.');
+                                  }).catch(function(err) {
+                                      console.error("Error updating previous entry's next_date:", err);
+                                      req.flash('deleteStatus', 'Could not update previous entry\'s next_date. Please try again later.');
+                                      res.status(500).send('Could not update previous entry\'s next_date. Please try again later.');
+                                  });
+                              } else {
+                                  req.flash('deleteStatus', 'No entries found for updating previous entry\'s next_date.');
+                                  res.status(200).send('No entries found for updating previous entry\'s next_date.');
+                              }
+                          }).catch(function(err) {
+                              console.error("Error finding average days_ago:", err);
+                              req.flash('deleteStatus', 'Could not find average days_ago. Please try again later.');
+                              res.status(500).send('Could not find average days_ago. Please try again later.');
+                          });
+                      } else {
+                          res.status(200).send('Latest entry successfully deleted.');
+                      }
+                  }).catch(function(err) {
+                      console.error("Error deleting latest entry:", err);
+                      req.flash('deleteStatus', 'Could not delete latest entry. Please try again later.');
+                      res.status(500).send('Could not delete latest entry. Please try again later.');
+                  });
+              }).catch(function(err) {
+                  console.error("Error finding previous entry:", err);
+                  req.flash('deleteStatus', 'Could not find previous entry. Please try again later.');
+                  res.status(500).send('Could not find previous entry. Please try again later.');
+              });
+          }).catch(function(err) {
+              console.error("Error finding latest entry:", err);
+              req.flash('deleteStatus', 'Could not find latest entry. Please try again later.');
+              res.status(500).send('Could not find latest entry. Please try again later.');
+          });
+      } else {
+          // Delete all entries for the verb and task combination
+          Entry.destroy({
+              where: {
+                  created_by: req.user.id,
+                  verb: verb,
+                  task: task
+              }
+          }).then(function(deletedCount) {
+              if (deletedCount > 0) {
+                  req.flash('deleteStatus', deletedCount + ' entries successfully deleted.');
+                  res.status(200).send(deletedCount + ' entries successfully deleted.');
+              } else {
+                  req.flash('deleteStatus', 'No matching entries found.');
+                  res.status(404).send('No matching entries found.');
+              }
+          }).catch(function(err) {
+              console.error("Error deleting entries:", err);
+              req.flash('deleteStatus', 'Could not delete. Please try again later.');
+              res.status(500).send('Could not delete. Please try again later.');
+          });
+      }
   });
+
 
   
   // show the login form
@@ -417,6 +516,31 @@ module.exports = function(app, passport, models) {
         }
 
       });
+  
+  app.get('/api/orphans', isLoggedIn, function(req, res) {
+      var Entry = models.Entry;
+
+    // Calculate the date one month ago
+    var oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    Entry.findAll({
+        group: ['verb', 'task'], // Group by verb and task to count records for each combination
+        having: models.Sequelize.literal(`COUNT(id) = 1 AND MAX(entry_date) < '${oneMonthAgo.toISOString()}'`), // Use Sequelize.literal to construct the having clause
+        attributes: [
+            'verb',
+            'task',
+            [models.Sequelize.fn('COUNT', 'id'), 'entry_count'], // Count of entries for each combination
+            [models.Sequelize.fn('MAX', 'entry_date'), 'last_entry_date'] // Last entry date for each combination
+        ]
+    }).then(function(entries) {
+        res.json(entries);
+    }).catch(function(err) {
+        console.error("Error retrieving old entries:", err);
+        res.status(500).send('Could not retrieve old entries. Please try again later.');
+    });
+  });
+
 };
 
 function isLoggedIn(req, res, next) {
@@ -452,7 +576,7 @@ function send_mail(to_email, subject, body) {
 
     Sendgrid.API(sgReq, (err) => {
       if (err) {
-        next(err);
+        // next(err);
         console.log('Mail could not be sent: ' + err);
         return "err";
       }
