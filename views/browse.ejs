@@ -8,8 +8,17 @@
                <% if(entries.length > 0) { %>
                 <div class="collection">
                   <% entries.forEach(function(e) { %>
+                    
+                    <% 
+                       var formattedDate = new Date(e.ed2).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      });
+                    %>
                   <a href="/add?verb=<%= e.verb %>&task=<%= e.task %>" class="collection-item">
-                    <p class="fl"><%= e.verb + " " + e.task %> on <%= e.ed2 %> <i class="material-icons pull-left">add_circle </i>
+                    <p class="fl"><%= e.verb + " " + e.task %> on <%= formattedDate %> <i class="material-icons pull-left">add_circle </i>
                     <span class="badge new blue" data-badge-caption=""><time class="timeago" datetime="<%= e.ed %>"><%= e.ed %></time></span></p>
                   </a>
                   <% }) %>

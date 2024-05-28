@@ -135,47 +135,54 @@ module.exports = function(app, passport, models) {
 
     });
 
+    const { Op } = require('sequelize');
+
     app.get('/browse', isLoggedIn, function(req, res) {
-      var Entry = models.entry;
-      var cnt = 0;
-      var limit = 10;
-      var offset = 0;
-      var page = req.query.page ? req.query.page : 1;
-      offset = limit * (page - 1);
-      
-      var whereClause = {created_by: req.user.id, status: 1};
-      if(req.query.verb) {
-        whereClause.verb = req.query.verb;
-      }
-      if(req.query.task) {
-        whereClause.task = {$like : '%' + req.query.task + '%'};
-      }
+        var Entry = models.Entry;
+        var cnt = 0;
+        var limit = 10;
+        var offset = 0;
+        var page = req.query.page ? req.query.page : 1;
+        offset = limit * (page - 1);
 
-      Entry.findAndCountAll({
-        where:whereClause,
-        attributes: ['verb', 'task',
-          [Entry.sequelize.fn('date_format', Entry.sequelize.col('entry_date'), '%Y-%m-%dT%TZ'), 'ed'],
-          [Entry.sequelize.fn('date_format', Entry.sequelize.col('entry_date'), '%a %D %b, %Y'), 'ed2']],
-        order: [['entry_date', 'DESC']],
-        limit: limit,
-        offset: offset,
-        raw: true
-      }).then(function (entries) {
-        var pages = Math.ceil(entries.count / limit);
-        cnt = entries.count;
-        entries = entries.rows;
+        var whereClause = { created_by: req.user.id, status: 1 };
+        if (req.query.verb) {
+            whereClause.verb = req.query.verb;
+        }
+        if (req.query.task) {
+            whereClause.task = { [Op.like]: '%' + req.query.task + '%' };
+        }
 
-        res.render('../views/browse', {
-          APP_TITLE: process.env.APP_TITLE,
-          user: req.user,
-          entries: entries,
-          cnt: cnt,
-          pages: pages,
-          current_page: page
+        Entry.findAndCountAll({
+            where: whereClause,
+            attributes: ['verb', 'task',
+                [Entry.sequelize.fn('strftime', '%Y-%m-%dT%H:%M:%SZ', Entry.sequelize.col('entry_date')), 'ed'],
+                ['entry_date', 'ed2']
+            ],
+            order: [['entry_date', 'DESC']],
+            limit: limit,
+            offset: offset,
+            raw: true
+        }).then(function(entries) {
+            var pages = Math.ceil(entries.count / limit);
+            cnt = entries.count;
+            entries = entries.rows;
+
+            res.render('../views/browse', {
+                APP_TITLE: process.env.APP_TITLE,
+                user: req.user,
+                entries: entries,
+                cnt: cnt,
+                pages: pages,
+                current_page: page
+            });
+
+        }).catch(function(err) {
+            console.error("Error browsing entries:", err);
+            res.status(500).send("Internal Server Error");
         });
-
-      });
     });
+
 
     app.get('/add', isLoggedIn, function(req, res) {
       res.render('../views/add-new', {
