@@ -253,6 +253,7 @@ module.exports = function(app, passport, models) {
                 }
               }
           }).catch(function(err){
+              console.error("Error creating entry:", err);
               req.flash('addStatus', 'Could not be added. Please try again later');
               res.redirect('/add');
               return;

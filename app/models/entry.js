@@ -36,7 +36,19 @@ module.exports = (sequelize, DataTypes) => {
         },
         created_by: {
             type: DataTypes.INTEGER
+        },
+        created_at: {
+            type: DataTypes.DATE,
+            field: 'created_at' // Specify the column name in your database
+        },
+        updated_at: {
+            type: DataTypes.DATE,
+            field: 'updated_at' // Specify the column name in your database
         }
+      }, {
+          timestamps: true, // Enable automatic timestamps
+          createdAt: 'created_at', // Specify the field name for createdAt
+          updatedAt: 'updated_at' // Specify the field name for updatedAt
     });
 
     return Entry;
