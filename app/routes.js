@@ -230,7 +230,7 @@ module.exports = function(app, passport, models) {
                     {where: {created_by: req.user.id, status: 1, forecast: 1, verb: req.body.verb, task: req.body.task} }
                   ).then(function(r) {
                     Entry.findAll({
-                      where: {created_by: req.user.id, status: 1, forecast: 1, days_ago:{$gt:0}, verb: req.body.verb, task: req.body.task},
+                      where: {created_by: req.user.id, status: 1, forecast: 1, days_ago:{ [models.Sequelize.Op.gt]: 0 }, verb: req.body.verb, task: req.body.task},
                       attributes: [[Entry.sequelize.fn('AVG', Entry.sequelize.col('days_ago')), 'days_ago'], 'verb' ,'task'],
                       raw: true
                     }).then(function(e) {
@@ -323,12 +323,14 @@ module.exports = function(app, passport, models) {
         if(task && task != ''){
           Entry.findAll({
             where: {created_by: req.user.id, status: 1, forecast: 1, verb: verb, task: task},
-            attributes: [[Entry.sequelize.fn('MAX', Entry.sequelize.col('entry_date')), 'entry_date'] ,'task'],
+            attributes: [[Entry.sequelize.fn('MAX', Entry.sequelize.col('entry_date')), 'entry_date'] ,'task', 'next_date'],
             group: ['task'],
             order: [['task', 'ASC']],
             limit: 10,
             raw: true
           }).then(function (entries) {
+            console.log("_____________");
+            console.log(entries);
             res.send(entries);
           })
 
