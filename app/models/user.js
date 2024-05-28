@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
                 isEmail: true
             }
         },
+        google_profile_id: {
+          type: DataTypes.STRING
+        },
         last_login: {
             type: DataTypes.DATE
         },
