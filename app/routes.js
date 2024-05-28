@@ -282,6 +282,40 @@ module.exports = function(app, passport, models) {
       });
     });
 
+  
+  app.get('/delete', isLoggedIn, function(req, res) {
+      var Entry = models.Entry;
+      var verb = req.query.v;
+      var task = req.query.t;
+
+      // Check if verb and task are provided
+      if (!verb || !task) {
+          res.status(400).send('Verb and task are required.');
+          return;
+      }
+
+      Entry.destroy({
+          where: {
+              created_by: req.user.id,
+              verb: verb,
+              task: task
+          }
+      }).then(function(deletedCount) {
+          if (deletedCount > 0) {
+              req.flash('deleteStatus', deletedCount + ' entries Successfully deleted.');
+              res.status(200).send(deletedCount + ' entries Successfully deleted.');
+          } else {
+              req.flash('deleteStatus', 'No matching entries found.');
+              res.status(404).send('No matching entries found.');
+          }
+      }).catch(function(err) {
+          console.error("Error deleting entries:", err);
+          req.flash('deleteStatus', 'Could not delete. Please try again later.');
+          res.status(500).send('Could not delete. Please try again later.');
+      });
+  });
+
+  
   // show the login form
     app.get('/login', function(req, res) {
 
