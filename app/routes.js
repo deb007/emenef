@@ -7,7 +7,7 @@ module.exports = function(app, passport, models) {
   })
   
   app.post('/subscribe', isLoggedIn, function(req, res) {
-    var Subscriber = models.subscriber;
+    var Subscriber = models.Subscriber;
     if (req.user && req.user.id) {
       Subscriber.findOne({
         attributes: ['id'],
@@ -15,18 +15,29 @@ module.exports = function(app, passport, models) {
       }).then(function (item) {
         if(item){
           console.log('Existing subscriber' + req.user.id);
-          item.updateAttributes({subscription: req.body ? JSON.stringify(req.body) : ''});
-          res.status(200).send({success: true});
+          item.update({ subscription: req.body ? JSON.stringify(req.body) : '' })
+          .then(() => {
+            res.status(200).send({ success: true });
+          })
+          .catch(err => {
+            console.error("Error updating subscriber:", err);
+            res.status(500).send({ success: false, message: "Internal Server Error" });
+          });
         } else {
           console.log('New subscriber' + req.user.id);
           var data = {
             user_id: req.user.id,
             subscription: req.body? JSON.stringify(req.body) : ''
           };
-          Subscriber.create(data).then(function(newItem) {
+          Subscriber.create(data)
+          .then(newItem => {
             console.log(newItem);
-            res.status(200).send({success: true});
-          })    
+            res.status(200).send({ success: true });
+          })
+          .catch(err => {
+            console.error("Error creating subscriber:", err);
+            res.status(500).send({ success: false, message: "Internal Server Error" });
+          });  
         }
       });
 
@@ -94,7 +105,7 @@ module.exports = function(app, passport, models) {
 
     app.get('/get_orphans', isLoggedIn, function(req, res) {
       
-      var Entry = models.entry;
+      var Entry = models.Entry;
       
       Entry.sequelize.query("SELECT * FROM orphans where created_by= " + req.user.id + " AND entry_date < NOW() - INTERVAL 30 DAY order by RAND() LIMIT 1",
         { type: Entry.sequelize.QueryTypes.SELECT})
