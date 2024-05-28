@@ -36,7 +36,7 @@ module.exports = function(app, passport, models) {
   });
 
     app.get('/', isLoggedIn, function(req, res) {
-      var Entry = models.entry;
+      var Entry = models.Entry;
       var currentDate = new Date();
       var dd_str = currentDate.getDate();
       for (var i = 0; i < 3; i++) {
@@ -311,15 +311,16 @@ module.exports = function(app, passport, models) {
       });
 };
 
-// route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
+    // Hard-code the user to be logged in with user ID 1
+    req.user = { id: 1 };
+    console.log(req.user.id);
 
-    // if user is authenticated in the session, carry on
-    if (req.isAuthenticated())
-        return next();
+    // Optionally, set req.isAuthenticated to always return true
+    req.isAuthenticated = () => true;
 
-    // if they aren't redirect them to the home page
-    res.redirect('/login');
+    // Proceed to the next middleware or route handler
+    return next();
 }
 
 function send_mail(to_email, subject, body) {

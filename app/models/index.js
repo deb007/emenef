@@ -5,7 +5,12 @@ const fs = require("fs");
 // SQLite configuration
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: path.join(__dirname, 'emenef.db') // path to your SQLite file
+  storage: path.join(__dirname, 'emenef.db'),
+  pool: {
+    max: 10,
+    min: 0,
+    idle: 10000
+  }
 });
 
 const db = {};
