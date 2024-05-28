@@ -222,48 +222,60 @@ module.exports = function(app, passport, models) {
             created_by: req.user.id
           };
           Entry.create(data).then(function(newItem) {
-              if (newItem) {
-                console.log(newItem.id);
-                if(newItem.forecast == 1) {
-                  Entry.update(
-                    {next_date: null},
-                    {where: {created_by: req.user.id, status: 1, forecast: 1, verb: req.body.verb, task: req.body.task} }
-                  ).then(function(r) {
-                    Entry.findAll({
-                      where: {created_by: req.user.id, status: 1, forecast: 1, days_ago:{ [models.Sequelize.Op.gt]: 0 }, verb: req.body.verb, task: req.body.task},
-                      attributes: [[Entry.sequelize.fn('AVG', Entry.sequelize.col('days_ago')), 'days_ago'], 'verb' ,'task'],
-                      raw: true
-                    }).then(function(e) {
-                      if(e[0].days_ago > 0) {
-                        Entry.sequelize.query("UPDATE entries SET next_date = DATE_ADD(entry_date, INTERVAL '"+Math.round(e[0].days_ago)+"' DAY) WHERE id = "+newItem.id)
-                        .spread((results, metadata) => {
-                          console.log("Update done");
-                        })
-                      }
-                      req.flash('addStatus', 'Successfully added.');
-                      res.redirect('/add');
-                      return;
-                    })
-                  }).catch(function(err) {
-                    req.flash('addStatus', 'Could not be added. Please try again later');
-                    res.redirect('/add');
-                    return;
-
-                  })
-
-                } else {
+            if (newItem) {
+              console.log(newItem.id);
+              if (newItem.forecast == 1) {
+                Entry.update(
+                  { next_date: null },
+                  { where: { created_by: req.user.id, status: 1, forecast: 1, verb: req.body.verb, task: req.body.task } }
+                ).then(function(r) {
+                  Entry.findAll({
+                    where: {
+                      created_by: req.user.id,
+                      status: 1,
+                      forecast: 1,
+                      days_ago: { [models.Sequelize.Op.gt]: 0 },
+                      verb: req.body.verb,
+                      task: req.body.task
+                    },
+                    attributes: [[Entry.sequelize.fn('AVG', Entry.sequelize.col('days_ago')), 'days_ago'], 'verb', 'task'],
+                    raw: true
+                  }).then(function(e) {
+                    if (e[0].days_ago > 0) {
+                      Entry.sequelize.query(
+                        "UPDATE entries SET next_date = datetime(entry_date, '+" + Math.round(e[0].days_ago) + " days') WHERE id = " + newItem.id
+                      ).then(([results, metadata]) => {
+                        console.log("Update done");
+                      }).catch(err => {
+                        console.error("Error updating next_date:", err);
+                      });
+                    }
                     req.flash('addStatus', 'Successfully added.');
                     res.redirect('/add');
                     return;
-
-
-                }
+                  }).catch(err => {
+                    console.error("Error finding entries:", err);
+                    req.flash('addStatus', 'Could not be added. Please try again later');
+                    res.redirect('/add');
+                    return;
+                  });
+                }).catch(function(err) {
+                  console.error("Error updating entry:", err);
+                  req.flash('addStatus', 'Could not be added. Please try again later');
+                  res.redirect('/add');
+                  return;
+                });
+              } else {
+                req.flash('addStatus', 'Successfully added.');
+                res.redirect('/add');
+                return;
               }
-          }).catch(function(err){
-              console.error("Error creating entry:", err);
-              req.flash('addStatus', 'Could not be added. Please try again later');
-              res.redirect('/add');
-              return;
+            }
+          }).catch(function(err) {
+            console.error("Error creating entry:", err);
+            req.flash('addStatus', 'Could not be added. Please try again later');
+            res.redirect('/add');
+            return;
           });
 
         }
