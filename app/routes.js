@@ -104,36 +104,6 @@ module.exports = function(app, passport, models) {
 
     });
 
-    app.get('/get_orphans', isLoggedIn, function(req, res) {
-      
-      var Entry = models.Entry;
-      res.send([]);
-      
-      /*
-      const orphansQuery = `
-        SELECT * 
-        FROM orphans 
-        WHERE created_by = ? AND entry_date < datetime('now', '-30 days') 
-        ORDER BY RANDOM() 
-        LIMIT 1
-      `;
-
-      // Fetch orphans
-      Entry.sequelize.query(orphansQuery, {
-        replacements: [req.user.id],
-        type: Entry.sequelize.QueryTypes.SELECT
-      })
-      .then(function(entries) {
-        res.send(entries);
-      })
-      .catch(function(error) {
-        console.error("Error executing query:", error);
-        res.status(500).send("Internal Server Error");
-      });
-      */
-      
-
-    });
 
     const { Op } = require('sequelize');
 
@@ -517,7 +487,7 @@ module.exports = function(app, passport, models) {
 
       });
   
-  app.get('/api/orphans', isLoggedIn, function(req, res) {
+  app.get('/get_orphans', isLoggedIn, function(req, res) {
       var Entry = models.Entry;
 
     // Calculate the date one month ago
@@ -531,7 +501,7 @@ module.exports = function(app, passport, models) {
             'verb',
             'task',
             [models.Sequelize.fn('COUNT', models.Sequelize.col('id')), 'entry_count'], // Count of entries for each combination
-            [models.Sequelize.fn('MAX', models.Sequelize.col('entry_date')), 'last_entry_date'] // Last entry date for each combination
+            [models.Sequelize.fn('MAX', models.Sequelize.col('entry_date')), 'entry_date'] // Last entry date for each combination
         ]
     }).then(function(entries) {
         res.json(entries);
