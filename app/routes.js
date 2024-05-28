@@ -69,11 +69,12 @@ module.exports = function(app, passport, models) {
       `;
 
       const forecastEntriesQuery = `
-        SELECT verb, task, strftime('%Y-%m-%dT%H:%M:%SZ', next_date) AS ed, strftime('%A %d %B, %Y', entry_date) AS ed2 
+        SELECT verb, task, strftime('%Y-%m-%dT%H:%M:%SZ', next_date) AS ed, entry_date AS ed2 
         FROM entries 
         WHERE created_by = ? AND status = 1 AND forecast = 1 AND next_date < datetime('now', '+7 days') 
         ORDER BY next_date
       `;
+
 
       Entry.sequelize.query(memoryEntriesQuery, {
         replacements: [userId, ddStr],
