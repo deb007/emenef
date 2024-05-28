@@ -106,13 +106,30 @@ module.exports = function(app, passport, models) {
     app.get('/get_orphans', isLoggedIn, function(req, res) {
       
       var Entry = models.Entry;
+      res.send([]);
       
-      Entry.sequelize.query("SELECT * FROM orphans where created_by= " + req.user.id + " AND entry_date < NOW() - INTERVAL 30 DAY order by RAND() LIMIT 1",
-        { type: Entry.sequelize.QueryTypes.SELECT})
-      .then(function (entries) {
-        res.send(entries);
-        
+      /*
+      const orphansQuery = `
+        SELECT * 
+        FROM orphans 
+        WHERE created_by = ? AND entry_date < datetime('now', '-30 days') 
+        ORDER BY RANDOM() 
+        LIMIT 1
+      `;
+
+      // Fetch orphans
+      Entry.sequelize.query(orphansQuery, {
+        replacements: [req.user.id],
+        type: Entry.sequelize.QueryTypes.SELECT
       })
+      .then(function(entries) {
+        res.send(entries);
+      })
+      .catch(function(error) {
+        console.error("Error executing query:", error);
+        res.status(500).send("Internal Server Error");
+      });
+      */
       
 
     });
