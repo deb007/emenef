@@ -202,7 +202,7 @@ module.exports = function(app, passport, models) {
             res.redirect('/add');
             return;
         } else {
-          var Entry = models.entry;
+          var Entry = models.Entry;
           var User = models.user;
           var data = {
             verb: req.body.verb,
@@ -346,7 +346,7 @@ module.exports = function(app, passport, models) {
 
         if(verb != '' && task != '') {
           Entry.findAll({
-            where: {created_by: req.user.id, status: 1, forecast: 1, verb: verb, task: task, days_ago:{$gt:0}},
+            where: {created_by: req.user.id, status: 1, forecast: 1, verb: verb, task: task, days_ago: { [models.Sequelize.Op.gt]: 0 }},
             attributes: [[Entry.sequelize.fn('AVG', Entry.sequelize.col('days_ago')), 'avg_days_ago'] ,'task'],
             group: ['task'],
             order: [['task', 'ASC']],
