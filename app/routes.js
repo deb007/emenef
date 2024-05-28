@@ -86,6 +86,8 @@ module.exports = function(app, passport, models) {
           type: Entry.sequelize.QueryTypes.SELECT
         })
         .then(f_entries => {
+          console.log("f entries.....")
+          console.log(f_entries)
           // Render the view with fetched entries
           res.render('../views/index', {
             APP_TITLE: process.env.APP_TITLE,

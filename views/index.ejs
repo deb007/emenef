@@ -9,8 +9,9 @@
                 <p>Hey!! These are the tasks you would probably want to do today -</p>
                 <div class="collection">
                   <% f_entries.forEach(function(fe) { %>
+                    <%= fe %>
                   <a href="/add?verb=<%= fe.verb %>&task=<%= fe.task %>" class="collection-item">
-                    <span><i class="material-icons">add_circle</i> You last <b><%= fe.verb + " " + fe.task %></b> on <b><%= fe.ed2 %></b>.</span>
+                    <span><i class="material-icons">add_circle</i> You last <b><%= fe.verb + " " + fe.task %></b> on <b><%= fe.ed2 || 'Unknown' %></b>.</span>
                     <span class="badge new blue" data-badge-caption="Next one should be "><time class="timeago" datetime="<%= fe.ed %>"><%= fe.ed %></time></span>
                   </a>
                   <% }) %>
