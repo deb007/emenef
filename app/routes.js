@@ -530,8 +530,8 @@ module.exports = function(app, passport, models) {
         attributes: [
             'verb',
             'task',
-            [models.Sequelize.fn('COUNT', 'id'), 'entry_count'], // Count of entries for each combination
-            [models.Sequelize.fn('MAX', 'entry_date'), 'last_entry_date'] // Last entry date for each combination
+            [models.Sequelize.fn('COUNT', models.Sequelize.col('id')), 'entry_count'], // Count of entries for each combination
+            [models.Sequelize.fn('MAX', models.Sequelize.col('entry_date')), 'last_entry_date'] // Last entry date for each combination
         ]
     }).then(function(entries) {
         res.json(entries);
