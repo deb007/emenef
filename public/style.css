@@ -1,0 +1,17 @@
+span.badge[data-badge-caption]::before {
+    content: " " attr(data-badge-caption);
+}
+span.badge[data-badge-caption]::after {
+    content: "";
+}
+.material-icons {
+  vertical-align: middle !important;
+  padding-bottom: 3px;
+}
+.fl::first-letter {
+  text-transform:capitalize;
+}
+.msg {
+  font-weight: bold;
+  color: orange;
+}

@@ -1,0 +1,44 @@
+</div>
+</main>
+<footer class="page-footer blue accent-4">
+  <div class="footer-copyright blue accent-4">
+    <div class="container">
+    &copy; <%= new Date().getFullYear() + ', ' + APP_TITLE %>
+    </div>
+  </div>
+</footer>
+
+<!--Import jQuery before materialize.js-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<% if(page == 'home' || page == 'browse') { %>
+<script src="/jquery.timeago.js" type="text/javascript"></script>
+<script>
+$(document).ready(function(){
+  jQuery.timeago.settings.allowFuture = true;
+  $("time.timeago").timeago();
+  $(".button-collapse").sideNav();
+  <% if(page == 'home') { %>
+    $(document).ready(function(){
+        $.ajax({
+        url: "/get_orphans/",
+        context: document.body
+      }).done(function(data) {
+          // console.log(data);
+          if(data && data != '') {
+            $('#orphan').html('You last <b>'+data[0].verb+' '+data[0].task+'</b> <time class="timeago" id="to" datetime="'+data[0].entry_date+'" title="'+data[0].entry_date+'">'+data[0].entry_date+'</time>. Would you like to <a href="/add?verb='+data[0].verb+'&task='+data[0].task+'">add again</a>?');
+            $("time#to").timeago();
+          }
+      });
+    })
+  <% } %>
+})
+</script>
+<% } else if(page == 'add') { %>
+<script src="/client.js"></script>
+<% } %>
+
+
+</body>
+</html>

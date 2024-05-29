@@ -1,0 +1,74 @@
+<%- include('partials/header', {page: 'home', title: APP_TITLE}); %>
+
+       <div class="row" style="margin:2rem 0rem 3rem 0rem;">
+         <div class="col s12 z-depth-5">
+           <div class="card indigo lighten-4" style="min-height: 12rem;">
+             <div class="card-content">
+               <span class="card-title">Your Forecasted upcoming tasks!!</span>
+               <% if(f_entries.length > 0) { %>
+                <p>Hey!! These are the tasks you would probably want to do today -</p>
+                <div class="collection">
+                  <% f_entries.forEach(function(fe) { %>
+                    <% 
+                       var formattedDate = new Date(fe.ed2).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      });
+                    %>
+                  <a href="/add?verb=<%= fe.verb %>&task=<%= fe.task %>" class="collection-item">
+                    <span><i class="material-icons">add_circle</i> You last <b><%= fe.verb + " " + fe.task %></b> on <b><%= formattedDate || 'Unknown' %></b>.</span>
+                    <span class="badge new blue" data-badge-caption="Next one should be "><time class="timeago" datetime="<%= fe.ed %>"><%= fe.ed %></time></span>
+                  </a>
+                  <% }) %>
+               </div>
+               <% } else { %>
+                 <p>Sorry, No tasks for today. Why not <a href='/add'>add few tasks</a> that you did today?<br>
+                   <%= APP_TITLE %> will automatigically forecast and tell you the tasks that you might want to do every day. It does this
+                   by calculating the time you usually take between two similar tasks.
+                 </p>
+               <% } %>
+               <span id="orphan"></span>
+             </div>
+           </div>
+         </div>
+       </div>
+
+       <div class="row" style="margin:0rem 0rem 3rem 0rem;">
+         <div class="col s12 z-depth-5">
+           <div class="card deep-purple lighten-3" style="min-height: 12rem;">
+             <div class="card-content">
+               <span class="card-title">Your Memories for today!!</span>
+               <% if(m_entries.length > 0) { %>
+               <p>This is what happened around today's date (<%= dd %>) in the last few years -</p>
+                <div class="collection">
+                  <% m_entries.forEach(function(me) { %>
+                  <a href="/add?verb=<%= me.verb %>&task=<%= me.task %>" class="collection-item">
+                    <span><i class="material-icons">info_outline</i> <%= me.verb + " " + me.task + " on " + me.ed2 %></span>
+                    <span class="badge new red"  data-badge-caption=""><time class="timeago" datetime="<%= me.ed %>"><%= me.ed %></time></span>
+                  </a>
+                  <% }) %>
+               </div>
+               <% } else { %>
+                 <p>Sorry, No entries on today's date. Why not <a href='/add'>add few entries</a>?<br>
+                   Has it been a year that you bought that new car? Or had that wonderful vacation? Or met your loved one?
+                   Let <%= APP_TITLE %> take care of your previous years' memories and bask in nostalgia.
+                 </p>
+               <% } %>
+             </div>
+           </div>
+         </div>
+       </div>
+        <div class="fixed-action-btn">
+           <a class="btn-floating btn-large red" href="/add">
+             <i class="large material-icons">add</i>
+           </a>
+        </div>
+
+<script src="/js/main.js"></script>
+<script>
+  console.log(isSubscribed);
+   setTimeout(subscribeUser, 2000);
+</script>
+<%- include('partials/footer', {page: 'home'}); %>

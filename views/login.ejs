@@ -1,0 +1,21 @@
+<%- include('partials/header', {page: 'login', title: APP_TITLE}); %>
+
+              <div class="row" style="margin:2rem;">
+                <div class="col s12 z-depth-5">
+                  <div class="card darken-1">
+                    <div class="card-content" style="padding-top:8rem;">
+                      <span class="card-title">Login with</span>
+
+                      <div class="row" style="min-height:16rem;">
+                        <div class="col m2">&nbsp;</div>
+                        <div class="col s5 m4"><a href="/auth/facebook" class="waves-effect waves-light btn blue"><span><i class="fa fa-facebook"></i> Facebook</span></a></div>
+                        <div class="col s5 m4"><a href="/auth/google" class="waves-effect waves-light btn deep-orange"><span><i class="fa fa-google-plus"></i> Google</span></a></div>
+                        <div class="col m2">&nbsp;</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+<%- include('partials/footer', {page: 'login', title: APP_TITLE}); %>
