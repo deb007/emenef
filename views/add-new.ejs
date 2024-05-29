@@ -1,0 +1,79 @@
+<%- include('partials/header', {page: 'add', title: APP_TITLE}); %>
+
+        <div class="row">
+        <% if(message) {%>
+          <ul>
+             <% for(var i = 0;i< message.length;i++){ %>
+             <li><%= message[i].msg %></li>
+             <%}%>
+          </ul>
+          <% }%>
+            <% if(messagestatus) {%>
+               <%= messagestatus %>
+            <% }%>
+          <h3>
+            What did you do today?
+          </h3>
+          <form class="col s12" method="POST" action="/save" name='f' id='f'>
+
+            <div class="row">
+              <div class="col s12">
+                <div class="card-panel lime lighten-5">
+                  <div class="row">
+                    <div class="col s6">
+                      <div class="input-field">
+                        <i class="material-icons prefix">textsms</i>
+                        <input type="text" id="verb" name="verb" class="autocomplete" autocomplete="off" value='<%= verb %>'>
+                        <label for="verb">Verb (got, bought, had, went ...)</label>
+                      </div>
+                    </div>
+                    <div class="input-field col s6">
+                      <i class="material-icons prefix">mode_edit</i>
+                      <input placeholder="What did you do.." id="task" name="task" type="text" onchange="show_status('new'); return false;" value='<%= task %>' class="validate" autocomplete="off">
+                      <label for="task">Task</label>
+                    </div>
+                  </div>
+                  <div class="row" id="div_status" style="display:none;">
+                    <div class="col s12">
+                      <div class="card-panel lime lighten-4">
+                        <div>You last <span id="s_verb" class="msg"></span> <span id="s_task" class="msg"></span> on
+                          <span id="s_last_date" class="msg"></span>, which was <span id="s_days_ago" class="msg"></span> days ago.</div>
+                        <div id="line2" style="display:none;">You usually take <span id="s_usual" class="msg"></span> days, so this time you are taking
+                          <span id="s_more_less" class="msg"></span> time.</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    On..
+                    <div class="input-field col s12">
+                      <i class="material-icons prefix">date_range</i>
+                      <input type="text" class="datepicker" id="entry_date" name="entry_date">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col s6">
+                      <input type="checkbox" id="memories" name="memories" value="1" />
+                      <label for="memories">Add to Memories?</label>
+                    </div>
+                    <div class="col s6">
+                      <input type="checkbox" id="forecast" name="forecast" value="1" />
+                      <label for="forecast">Use for Forecast?</label>
+
+                        <input type="hidden" id="last_date" name="last_date">
+                        <input type="hidden" id="days_ago" name="days_ago">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="input-field col s12 center">
+                      <button class="btn waves-effect waves-light" type="button" onclick="validate()" name="action">Submit
+                        <i class="material-icons right">send</i>
+                      </button>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        </div>
+
+<%- include('partials/footer', {page: 'add'}); %>
