@@ -32,9 +32,7 @@
     "sequelize": "^6.37.3",
     "web-push": "^3.2.5",
     "connect-redis": "^3.3.3",
-    "sqlite3": "^5.1.7"
-  },
-  "repository": {
-    "url": "https://google.com/"
+    "sqlite3": "^5.1.7",
+    "@supabase/supabase-js": "^1.28.5"
   }
 }
