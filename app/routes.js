@@ -4,15 +4,12 @@ const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const apiRoutes = require('./routes/apiRoutes');
 
 function isLoggedIn(req, res, next) {
-  // Hard-code the user to be logged in with user ID 1
-  req.user = { id: 1 };
-  console.log(req.user.id);
-
-  // Optionally, set req.isAuthenticated to always return true
-  req.isAuthenticated = () => true;
-
-  // Proceed to the next middleware or route handler
-  return next();
+  if (req.session.user) {
+    req.user = req.session.user;
+    return next();
+  } else {
+    res.redirect('/login');
+  }
 }
 
 function send_mail(to_email, subject, body) {
