@@ -44,7 +44,7 @@ function send_mail(to_email, subject, body) {
 
 
 module.exports = function (app, passport, models) {
-  app.use(authRoutes(passport, isLoggedIn));
+  app.use(authRoutes(models, passport, isLoggedIn));
   app.use(entryRoutes(models, isLoggedIn)); // Pass isLoggedIn as a parameter
   app.use(subscriptionRoutes(models, isLoggedIn));
   app.use(apiRoutes(models, isLoggedIn));
@@ -58,35 +58,45 @@ module.exports = function (app, passport, models) {
   app.get('/', isLoggedIn, function (req, res) {
     var Entry = models.Entry;
     var currentDate = new Date();
-    var dd_str = currentDate.getDate();
+    var ddArray = [currentDate.getDate().toString()]; // Initialize the array with the current day
+
+    // Add the next 3 days to the array
     for (var i = 0; i < 3; i++) {
       currentDate.setDate(currentDate.getDate() + 1);
-      dd_str += ',' + currentDate.getDate();
+      ddArray.push(currentDate.getDate().toString());
     }
-    var currentDate = new Date();
+
+    // Reset the date to the current date
+    currentDate = new Date();
+
+    // Add the previous 3 days to the array
     for (var i = 0; i < 3; i++) {
       currentDate.setDate(currentDate.getDate() - 1);
-      dd_str += ',' + currentDate.getDate();
+      ddArray.push(currentDate.getDate().toString());
     }
     const userId = req.user.id;
-    const ddStr = dd_str;
     const memoryEntriesQuery = `
-      SELECT verb, task, strftime('%Y-%m-%dT%H:%M:%SZ', entry_date) AS ed, strftime('%a %d %b, %Y', entry_date) AS ed2 
+      SELECT verb, task, 
+        TO_CHAR(entry_date, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS ed, 
+        TO_CHAR(entry_date, 'Dy DD Mon, YYYY') AS ed2 
       FROM entries 
-      WHERE created_by = ? AND status = 1 AND memories = 1 AND entry_date < date('now') 
-      AND strftime('%d', entry_date) IN (?)
+      WHERE created_by = ? AND status = 1 AND memories = 1 AND entry_date < NOW() 
+      AND TO_CHAR(entry_date, 'DD') = ANY(ARRAY[?]::text[])
     `;
 
     const forecastEntriesQuery = `
-      SELECT verb, task, strftime('%Y-%m-%dT%H:%M:%SZ', next_date) AS ed, entry_date AS ed2 
+      SELECT verb, task, 
+        TO_CHAR(next_date, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS ed, 
+        entry_date AS ed2 
       FROM entries 
-      WHERE created_by = ? AND status = 1 AND forecast = 1 AND next_date < datetime('now', '+7 days') 
+      WHERE created_by = ? AND status = 1 AND forecast = 1 
+        AND next_date < NOW() + INTERVAL '7 days' 
       ORDER BY next_date
     `;
 
 
     Entry.sequelize.query(memoryEntriesQuery, {
-      replacements: [userId, ddStr],
+      replacements: [userId, ddArray],
       type: Entry.sequelize.QueryTypes.SELECT
     })
       .then(m_entries => {

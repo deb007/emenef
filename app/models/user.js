@@ -37,11 +37,12 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         timestamps: true, // Enable automatic timestamps
         createdAt: 'created_at', // Specify the field name for createdAt
-        updatedAt: 'updated_at' // Specify the field name for updatedAt
+        updatedAt: 'updated_at', // Specify the field name for updatedAt
+        tableName: 'users'
     });
 
     // If you have associations, define them here
-    User.associate = function(models) {
+    User.associate = function (models) {
         // associations can be defined here
     };
 

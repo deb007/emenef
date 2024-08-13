@@ -5,7 +5,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-module.exports = function (passport, isLoggedIn) {
+module.exports = function (models, passport, isLoggedIn) {
 
     router.get('/login', function (req, res) {
         res.render('../views/login', {
@@ -18,12 +18,26 @@ module.exports = function (passport, isLoggedIn) {
     router.post('/login', async (req, res) => {
         const { email, password } = req.body;
         const { user, error } = await supabase.auth.signIn({ email, password });
+        const User = models.user;
 
         if (error) {
             return res.status(401).send(error.message);
         }
 
-        req.session.user = user;
+        // Update last_login and login_count in the users table
+        await User.findOne({ where: { email: user.email } })
+            .then(async (existingUser) => {
+                if (existingUser) {
+                    await existingUser.update({
+                        last_login: new Date(),
+                        login_count: existingUser.login_count + 1
+                    });
+                    req.session.user = { ...user, id: existingUser.id };
+                } else {
+                    console.log("No USERRRRRRRRRRRRRRRRR")
+                }
+            });
+
         res.redirect('/');
     });
 
@@ -43,13 +57,30 @@ module.exports = function (passport, isLoggedIn) {
     router.post('/signup', async (req, res) => {
         const { email, password } = req.body;
         const { user, error } = await supabase.auth.signUp({ email, password });
+        const User = models.user;
 
         if (error) {
             return res.status(401).send(error.message);
         }
 
-        req.session.user = user;
-        //res.send({ user });
+        // Create or update user in the users table
+        await User.findOrCreate({
+            where: { email: user.email },
+            defaults: {
+                email: user.email,
+                last_login: new Date(),
+                login_count: 1
+            }
+        }).then(([newUser, created]) => {
+            if (!created) {
+                newUser.update({
+                    last_login: new Date(),
+                    login_count: newUser.login_count + 1
+                });
+            }
+            req.session.user = { ...user, id: newUser.id };
+        });
+
         res.redirect('/');
     });
 

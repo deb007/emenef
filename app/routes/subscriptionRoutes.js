@@ -11,7 +11,7 @@ module.exports = function (models, isLoggedIn) {
                 where: { user_id: req.user.id }
             }).then(function (item) {
                 if (item) {
-                    console.log('Existing subscriber' + req.user.id);
+                    console.log('Existing subscriber:' + req.user.id);
                     item.update({ subscription: req.body ? JSON.stringify(req.body) : '' })
                         .then(() => {
                             res.status(200).send({ success: true });

@@ -14,6 +14,8 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0,
             notEmpty: true
         }
+    }, {
+        tableName: 'crons'
     });
 
     // If there are associations to define, add them here

@@ -13,11 +13,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT
         }
     }, {
-        indexes: [{ fields: ['user_id'] }]
+        timestamps: true, // Enable automatic timestamps
+        createdAt: 'createdat', // Specify the field name for createdAt
+        updatedAt: 'updatedat',
+        tableName: 'subscribers'
     });
 
     // Define any associations here if necessary
-    Subscriber.associate = function(models) {
+    Subscriber.associate = function (models) {
         // Example association
         // Subscriber.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
     };

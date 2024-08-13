@@ -2,10 +2,21 @@ const Sequelize = require("sequelize");
 const path = require("path");
 const fs = require("fs");
 
-// SQLite configuration
+// Supabase PostgreSQL configuration
 const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: path.join(__dirname, 'emenef.db'),
+  dialect: 'postgres',
+  host: process.env.SUPABASE_HOST,
+  port: process.env.SUPABASE_PORT,
+  database: process.env.SUPABASE_DB,
+  username: process.env.SUPABASE_USER,
+  password: process.env.SUPABASE_PWD,
+  ssl: true,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  },
   pool: {
     max: 10,
     min: 0,
@@ -15,21 +26,19 @@ const sequelize = new Sequelize({
 
 const db = {};
 
-
 fs
-    .readdirSync(__dirname)
-    .filter(file => (file.indexOf(".") !== 0) && (file !== "index.js") && (file.slice(-3) === '.js'))
-    .forEach(file => {
-        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-        db[model.name] = model;
-    });
+  .readdirSync(__dirname)
+  .filter(file => (file.indexOf(".") !== 0) && (file !== "index.js") && (file.slice(-3) === '.js'))
+  .forEach(file => {
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
+  });
 
 Object.keys(db).forEach(modelName => {
-    if (db[modelName].associate) {
-        db[modelName].associate(db);
-    }
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
 });
-
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
