@@ -219,4 +219,4 @@ function send_notification(opt, callback) {
 
 // launch ======================================================================
 app.listen(port);
-console.log('The magic happens on port ' + port);
+console.log('The new magic happens on port ' + port);
