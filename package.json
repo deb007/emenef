@@ -34,7 +34,7 @@
     "connect-redis": "^3.3.3",
     "sqlite3": "^5.1.7",
     "pg": "^8.12.0",
-    "@supabase/supabase-js": "^2.45.1"
+    "@supabase/supabase-js": "^1.28.5"
   },
   "repository": {
     "url": "https://google.com/"
