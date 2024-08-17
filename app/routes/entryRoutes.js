@@ -59,11 +59,12 @@ module.exports = function (models, isLoggedIn) { // Accept isLoggedIn as a param
                                         task: req.body.task
                                     },
                                     attributes: [[Entry.sequelize.fn('AVG', Entry.sequelize.col('days_ago')), 'days_ago'], 'verb', 'task'],
+                                    group: ['verb', 'task'],
                                     raw: true
                                 }).then(function (e) {
                                     if (e[0].days_ago > 0) {
                                         Entry.sequelize.query(
-                                            "UPDATE entries SET next_date = datetime(entry_date, '+" + Math.round(e[0].days_ago) + " days') WHERE id = " + newItem.id
+                                            "UPDATE entries SET next_date = entry_date + INTERVAL '" + Math.round(e[0].days_ago) + " days' WHERE id = " + newItem.id
                                         ).then(([results, metadata]) => {
                                             console.log("Update done");
                                         }).catch(err => {

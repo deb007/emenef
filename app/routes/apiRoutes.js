@@ -4,7 +4,7 @@ const router = express.Router();
 module.exports = function (models, isLoggedIn) {
     const Entry = models.Entry;
 
-    router.get('/get_verbs', isLoggedIn, function (req, res) {
+    router.get('/api/get_verbs', isLoggedIn, function (req, res) {
         Entry.findAll({
             where: { status: 1 },
             attributes: [Entry.sequelize.fn('DISTINCT', Entry.sequelize.col('verb')), 'verb'],
@@ -16,14 +16,18 @@ module.exports = function (models, isLoggedIn) {
         })
     });
 
-    router.get('/get_tasks', isLoggedIn, function (req, res) {
+    router.get('/api/get_tasks', isLoggedIn, function (req, res) {
         var verb = req.query.v;
         var task = req.query.t;
 
         if (task && task != '') {
             Entry.findAll({
                 where: { created_by: req.user.id, status: 1, forecast: 1, verb: verb, task: task },
-                attributes: [[Entry.sequelize.fn('MAX', Entry.sequelize.col('entry_date')), 'entry_date'], 'task', 'next_date'],
+                attributes: [
+                    [Entry.sequelize.fn('MAX', Entry.sequelize.col('entry_date')), 'entry_date'],
+                    'task',
+                    [Entry.sequelize.fn('MAX', Entry.sequelize.col('next_date')), 'next_date']
+                ],
                 group: ['task'],
                 order: [['task', 'ASC']],
                 limit: 10,
@@ -48,7 +52,7 @@ module.exports = function (models, isLoggedIn) {
         }
     });
 
-    router.get('/get_avg', isLoggedIn, function (req, res) {
+    router.get('/api/get_avg', isLoggedIn, function (req, res) {
         var verb = req.query.v;
         var task = req.query.t;
 
@@ -69,7 +73,7 @@ module.exports = function (models, isLoggedIn) {
         }
     });
 
-    router.get('/get_orphans', isLoggedIn, function (req, res) {
+    router.get('/api/get_orphans', isLoggedIn, function (req, res) {
 
         // Calculate the date one month ago
         var oneMonthAgo = new Date();
