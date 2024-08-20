@@ -25,16 +25,19 @@ function send_mail(to_email, subject, body) {
       }],
       from: { email: process.env.SENDGRID_SENDER },
       content: [{
-        type: 'text/plain',
+        type: 'text/html',
         value: body
       }]
     }
   });
 
-  Sendgrid.API(sgReq, (err) => {
+  Sendgrid.API(sgReq, (err, response) => {
     if (err) {
-      // next(err);
       console.log('Mail could not be sent: ' + err);
+      if (response) {
+        console.log('Response status code: ' + response.statusCode);
+        console.log('Response body: ' + response.body);
+      }
       return "err";
     }
     console.log('Mail sent Successfully');
@@ -119,5 +122,51 @@ module.exports = function (app, models) {
         res.status(500).send("Internal Server Error");
       });
 
+  });
+
+  // New endpoint for sending forecast emails
+  app.get('/send-forecast-emails', function (req, res) {
+    const User = models.user;
+    const Entry = models.Entry;
+
+    const forecastEntriesQuery = `
+      SELECT verb, task, 
+        TO_CHAR(next_date, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS ed, 
+        entry_date AS ed2 
+      FROM entries 
+      WHERE created_by = ? AND status = 1 AND forecast = 1 
+        AND next_date < NOW() + INTERVAL '7 days' 
+      ORDER BY next_date
+    `;
+
+    User.findAll()
+      .then(users => {
+        const emailPromises = users.map(user => {
+          return Entry.sequelize.query(forecastEntriesQuery, {
+            replacements: [user.id],
+            type: Entry.sequelize.QueryTypes.SELECT
+          })
+            .then(f_entries => {
+              if (f_entries.length > 0) {
+                var emailBody = "Hey " + user.fullname + ",\n\n";
+                emailBody += "Here are the upcoming tasks and their expected dates:\n";
+                emailBody += "<ol>";
+                const formattedDate = new Date(entry.ed).toLocaleDateString();
+                emailBody += f_entries.map(entry => `<li><b>${entry.verb} ${entry.task}</b> expected on <b>${formattedDate}</b></li>`).join('\n');
+                emailBody += "</ol>";
+                return send_mail(user.email, 'Your forecasted tasks for the next 7 days', emailBody);
+              }
+            });
+        });
+
+        return Promise.all(emailPromises);
+      })
+      .then(() => {
+        res.status(200).send({ success: true });
+      })
+      .catch(err => {
+        console.error("Error sending forecast emails:", err);
+        res.status(500).send("Internal Server Error");
+      });
   });
 };
