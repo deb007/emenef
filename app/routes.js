@@ -42,9 +42,8 @@ function send_mail(to_email, subject, body) {
   });
 }
 
-
-module.exports = function (app, passport, models) {
-  app.use(authRoutes(models, passport, isLoggedIn));
+module.exports = function (app, models) {
+  app.use(authRoutes(models, isLoggedIn));
   app.use(entryRoutes(models, isLoggedIn)); // Pass isLoggedIn as a parameter
   app.use(subscriptionRoutes(models, isLoggedIn));
   app.use(apiRoutes(models, isLoggedIn));
@@ -93,7 +92,6 @@ module.exports = function (app, passport, models) {
         AND next_date < NOW() + INTERVAL '7 days' 
       ORDER BY next_date
     `;
-
 
     Entry.sequelize.query(memoryEntriesQuery, {
       replacements: [userId, ddArray],

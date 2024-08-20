@@ -5,7 +5,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-module.exports = function (models, passport, isLoggedIn) {
+module.exports = function (models, isLoggedIn) {
 
     router.get('/login', function (req, res) {
         res.render('../views/login', {
