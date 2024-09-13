@@ -151,8 +151,7 @@ module.exports = function (app, models) {
                 var emailBody = "Hey " + user.fullname + ",\n\n";
                 emailBody += "Here are the upcoming tasks and their expected dates:\n";
                 emailBody += "<ol>";
-                const formattedDate = new Date(entry.ed).toLocaleDateString();
-                emailBody += f_entries.map(entry => `<li><b>${entry.verb} ${entry.task}</b> expected on <b>${formattedDate}</b></li>`).join('\n');
+                emailBody += f_entries.map(entry => `<li><b>${entry.verb} ${entry.task}</b> expected on <b>${new Date(entry.ed).toLocaleDateString()}</b></li>`).join('\n');
                 emailBody += "</ol>";
                 return send_mail(user.email, 'Your forecasted tasks for the next 7 days', emailBody);
               }
