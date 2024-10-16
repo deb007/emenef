@@ -1,37 +1,38 @@
 <%- include('partials/header', {page: 'signup', title: APP_TITLE}); %>
 
-<div class="row" style="margin:2rem;">
-  <div class="col s12 z-depth-5">
-    <div class="card darken-1">
-      <div class="card-content" style="padding-top:8rem;">
-        <span class="card-title">Sign Up</span>
-
-        <div class="row">
-          <form class="col s12" action="/signup" method="POST">
-            <div class="row">
-              <div class="input-field col s12">
-                <input id="email" type="email" name="email" class="validate" required>
-                <label for="email">Email</label>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-lg border-0 rounded-lg mt-5">
+        <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+          <h3 class="my-0">Sign Up</h3>
+        </div>
+        <div class="card-body">
+          <form action="/signup" method="POST">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" class="form-control" id="email" name="email" required>
               </div>
             </div>
-            <div class="row">
-              <div class="input-field col s12">
-                <input id="password" type="password" name="password" class="validate" required>
-                <label for="password">Password</label>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="password" name="password" required>
               </div>
             </div>
-            <div class="row">
-              <div class="col s12">
-                <button class="btn waves-effect waves-light" type="submit" name="action">Sign Up
-                  <i class="material-icons right">send</i>
-                </button>
-              </div>
+            <div class="d-grid">
+              <button class="btn btn-primary btn-lg" type="submit">
+                Sign Up <i class="fas fa-user-plus ms-2"></i>
+              </button>
             </div>
           </form>
         </div>
-        <div class="row">
-          <div class="col s12">
-            <p>Already have an account? <a href="/login">Login</a></p>
+        <div class="card-footer text-center py-3">
+          <div class="small">
+            Already have an account? <a href="/login" class="text-primary">Login</a>
           </div>
         </div>
       </div>

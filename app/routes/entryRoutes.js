@@ -249,8 +249,10 @@ module.exports = function (models, isLoggedIn) { // Accept isLoggedIn as a param
 
         Entry.findAndCountAll({
             where: whereClause,
-            attributes: ['verb', 'task',
-                [Entry.sequelize.fn('strftime', '%Y-%m-%dT%H:%M:%SZ', Entry.sequelize.col('entry_date')), 'ed'],
+            attributes: [
+                'verb',
+                'task',
+                [Entry.sequelize.fn('to_char', Entry.sequelize.col('entry_date'), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), 'ed'],
                 ['entry_date', 'ed2']
             ],
             order: [['entry_date', 'DESC']],

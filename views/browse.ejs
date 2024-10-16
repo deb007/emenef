@@ -1,58 +1,97 @@
-<%- include('partials/header', {page: 'browse', title: APP_TITLE}); %>
+<%- include('partials/header', {page: 'browse' , title: APP_TITLE}); %>
 
-       <div class="row" style="margin:2rem 0rem 3rem 0rem;">
-         <div class="col s12 z-depth-5">
-           <div class="card indigo accent-1" style="min-height: 12rem;">
-             <div class="card-content">
-               <span class="card-title">Your Entries</span>
-               <% if(entries.length > 0) { %>
-                <div class="collection">
-                  <% entries.forEach(function(e) { %>
-                    
-                    <% 
-                       var formattedDate = new Date(e.ed2).toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                      });
-                    %>
-                  <a href="/add?verb=<%= e.verb %>&task=<%= e.task %>" class="collection-item">
-                    <p class="fl"><%= e.verb + " " + e.task %> on <%= formattedDate %> <i class="material-icons pull-left">add_circle </i>
-                    <span class="badge new blue" data-badge-caption=""><time class="timeago" datetime="<%= e.ed %>"><%= e.ed %></time></span></p>
-                  </a>
-                  <% }) %>
-                    <ul class="pagination pull-right">
-                      <% if (current_page != 1) { %>
-                        <li class="waves-effect previous"><a href="/browse?page=<%= parseInt(current_page)-1 %>"><i class="material-icons">chevron_left</i> Prev</a></li>
-                      <% } %>
-                      <% for(var i=1; i<=pages; i++) { %>
-                        <% active = (current_page == i) ? 'active' : '' %>
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Your Entries</h4>
+          </div>
+          <div class="card-body">
+            <% if(entries.length> 0) { %>
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Action</th>
+                      <th>Task</th>
+                      <th>Date</th>
+                      <th>Time Ago</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% entries.forEach(function(e) { %>
+                      <% var formattedDate=new Date(e.ed2).toLocaleDateString('en-US', { weekday: 'long' ,
+                        day: 'numeric' , month: 'long' , year: 'numeric' }); %>
+                        <tr>
+                          <td>
+                            <%= e.verb %>
+                          </td>
+                          <td>
+                            <%= e.task %>
+                          </td>
+                          <td>
+                            <%= formattedDate %>
+                          </td>
+                          <td><time class="timeago" datetime="<%= e.ed %>">
+                              <%= e.ed %>
+                            </time></td>
+                        </tr>
+                        <% }) %>
+                  </tbody>
+                </table>
+              </div>
 
-                          <li class="waves-effect <%= active %>"><a href="/browse?page=<%= i %>"><%= i %></a></li>
-                      <% } %>
-                      <% if (current_page != pages) { %>
-                        <li class="waves-effect next"><a href="/browse?page=<%= parseInt(current_page)+1 %>">Next <i class="material-icons">chevron_right</i></a></li>
-                      <% } %>
+              <% if (pages> 1) { %>
+                <nav aria-label="Page navigation" class="mt-4">
+                  <ul class="pagination justify-content-center">
+                    <% var startPage=Math.max(1, current_page - 1); var endPage=Math.min(pages, startPage + 2); if
+                      (endPage - startPage < 2) startPage=Math.max(1, endPage - 2); %>
 
-                   </ul>
-               </div>
-               <% } else { %>
-                 <p>Sorry, No entries yet. Why not <a href='/add'>add few tasks</a> that you did today?<br>
-                   <%= APP_TITLE %> will automatigically forecast and tell you the tasks that you might want to do every day. It does this
-                   by calculating the time you usually take between two similar tasks.
-                 </p>
-               <% } %>
+                      <% if (current_page> 1) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="/browse?page=<%= current_page - 1 %>">&lsaquo;</a>
+                        </li>
+                        <% } %>
 
-             </div>
-           </div>
-         </div>
-       </div>
+                          <% for(var i=startPage; i <=endPage; i++) { %>
+                            <li class="page-item <%= (current_page == i) ? 'active' : '' %>">
+                              <a class="page-link" href="/browse?page=<%= i %>">
+                                <%= i %>
+                              </a>
+                            </li>
+                            <% } %>
 
-        <div class="fixed-action-btn">
-           <a class="btn-floating btn-large red" href="/add">
-             <i class="large material-icons">add</i>
-           </a>
+                              <% if (current_page < pages) { %>
+                                <li class="page-item">
+                                  <a class="page-link"
+                                    href="/browse?page=<%= parseInt(current_page) + 1 %>">&rsaquo;</a>
+                                </li>
+                                <% } %>
+                  </ul>
+                </nav>
+                <% } %>
+                  <% } else { %>
+                    <p class="text-center">No entries yet. Why not <a href='/add'>add a few tasks</a> that you
+                      did today?</p>
+                    <p class="text-center">
+                      <%= APP_TITLE %> will automatically forecast and tell you the tasks
+                        that you might want to do every day. It does this by calculating the time you usually take
+                        between
+                        two
+                        similar tasks.
+                    </p>
+                    <% } %>
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
 
-<%- include('partials/footer', {page: 'browse'}); %>
+  <div class="fixed-action-btn" style="position: fixed; bottom: 24px; right: 24px;">
+    <a class="btn btn-primary btn-lg rounded-circle" href="/add">
+      <i class="fas fa-plus"></i>
+    </a>
+  </div>
+
+  <%- include('partials/footer', {page: 'browse' }); %>

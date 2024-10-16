@@ -1,79 +1,150 @@
-<%- include('partials/header', {page: 'add', title: APP_TITLE}); %>
+<%- include('partials/header', {page: 'add' , title: APP_TITLE}); %>
 
-        <div class="row">
-        <% if(message) {%>
-          <ul>
-             <% for(var i = 0;i< message.length;i++){ %>
-             <li><%= message[i].msg %></li>
-             <%}%>
-          </ul>
-          <% }%>
-            <% if(messagestatus) {%>
-               <%= messagestatus %>
-            <% }%>
-          <h3>
-            What did you do today?
-          </h3>
-          <form class="col s12" method="POST" action="/save" name='f' id='f'>
-
-            <div class="row">
-              <div class="col s12">
-                <div class="card-panel lime lighten-5">
-                  <div class="row">
-                    <div class="col s6">
-                      <div class="input-field">
-                        <i class="material-icons prefix">textsms</i>
-                        <input type="text" id="verb" name="verb" class="autocomplete" autocomplete="off" value='<%= verb %>'>
-                        <label for="verb">Verb (got, bought, had, went ...)</label>
-                      </div>
-                    </div>
-                    <div class="input-field col s6">
-                      <i class="material-icons prefix">mode_edit</i>
-                      <input placeholder="What did you do.." id="task" name="task" type="text" onchange="show_status('new'); return false;" value='<%= task %>' class="validate" autocomplete="off">
-                      <label for="task">Task</label>
-                    </div>
-                  </div>
-                  <div class="row" id="div_status" style="display:none;">
-                    <div class="col s12">
-                      <div class="card-panel lime lighten-4">
-                        <div>You last <span id="s_verb" class="msg"></span> <span id="s_task" class="msg"></span> on
-                          <span id="s_last_date" class="msg"></span>, which was <span id="s_days_ago" class="msg"></span> days ago.</div>
-                        <div id="line2" style="display:none;">You usually take <span id="s_usual" class="msg"></span> days, so this time you are taking
-                          <span id="s_more_less" class="msg"></span> time.</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    On..
-                    <div class="input-field col s12">
-                      <i class="material-icons prefix">date_range</i>
-                      <input type="text" class="datepicker" id="entry_date" name="entry_date">
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col s6">
-                      <input type="checkbox" id="memories" name="memories" value="1" />
-                      <label for="memories">Add to Memories?</label>
-                    </div>
-                    <div class="col s6">
-                      <input type="checkbox" id="forecast" name="forecast" value="1" />
-                      <label for="forecast">Use for Forecast?</label>
-
-                        <input type="hidden" id="last_date" name="last_date">
-                        <input type="hidden" id="days_ago" name="days_ago">
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="input-field col s12 center">
-                      <button class="btn waves-effect waves-light" type="button" onclick="validate()" name="action">Submit
-                        <i class="material-icons right">send</i>
-                      </button>
-                    </div>
-                  </div>
-              </div>
-            </div>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <% if(message) { %>
+          <div class="alert alert-danger" style="display: none;">
+            <ul>
+              <% for(var i=0; i < message.length; i++) { %>
+                <li>
+                  <%= message[i].msg %>
+                </li>
+                <% } %>
+            </ul>
           </div>
-        </form>
-        </div>
+          <% } %>
+            <% if(messagestatus) { %>
+              <div class="alert alert-success" style="display: none;">
+                <%= messagestatus %>
+              </div>
+              <% } else { %>
+                <div class="alert alert-success">
+                  <%= messagestatus %>
+                </div>
+                <% } %>
+                  <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                      <h4 class="my-0">What did you do today?</h4>
+                    </div>
+                    <div class="card-body">
+                      <form method="POST" action="/save" name='f' id='f'>
+                        <div class="form-group">
+                          <label for="verb">Verb (got, bought, had, went ...)</label>
+                          <div class="input-group">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text"><i class="fas fa-text-width"></i></span>
+                            </div>
+                            <input type="text" id="verb" name="verb" class="form-control" autocomplete="off"
+                              value='<%= verb %>' onblur="show_status('new'); return false;">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="task">Task</label>
+                          <div class="input-group">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text"><i class="fas fa-tasks"></i></span>
+                            </div>
+                            <input type="text" id="task" name="task" class="form-control"
+                              onblur="show_status('new'); return false;" value='<%= task %>' autocomplete="off">
+                          </div>
+                        </div>
+                        <div class="form-group" id="div_status" style="display:none;">
+                          <div class="alert alert-info">
+                            <div>You last <span id="s_verb" class="msg"></span> <span id="s_task" class="msg"></span> on
+                              <span id="s_last_date" class="msg"></span>, which was <span id="s_days_ago"
+                                class="msg"></span> days ago.
+                            </div>
+                            <div id="line2" style="display:none;">You usually take <span id="s_usual"
+                                class="msg"></span>
+                              days, so this time you are taking
+                              <span id="s_more_less" class="msg"></span> time.
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="entry_date">On..</label>
+                          <div class="input-group">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                            </div>
+                            <input type="text" class="form-control datepicker" id="entry_date" name="entry_date">
+                          </div>
+                        </div>
+                        <div class="form-group form-check">
+                          <input type="checkbox" class="form-check-input" id="memories" name="memories" value="1">
+                          <label class="form-check-label" for="memories">Add to Memories?</label>
+                        </div>
+                        <div class="form-group form-check">
+                          <input type="checkbox" class="form-check-input" id="forecast" name="forecast" value="1">
+                          <label class="form-check-label" for="forecast">Use for Forecast?</label>
+                          <input type="text" id="last_date" name="last_date">
+                          <input type="text" id="days_ago" name="days_ago">
+                        </div>
+                        <div class="form-group text-center">
+                          <button class="btn btn-primary" type="button" onclick="validate()" name="action">Submit
+                            <i class="fas fa-paper-plane"></i>
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+      </div>
+    </div>
+  </div>
 
-<%- include('partials/footer', {page: 'add'}); %>
+  <div class="fixed-action-btn" style="position: fixed; bottom: 24px; right: 24px;">
+    <a class="btn btn-danger btn-lg" href="/add">
+      <i class="fa fa-plus"></i>
+    </a>
+  </div>
+
+  <%- include('partials/footer', {page: 'add' }); %>
+
+    <style>
+      .datepicker {
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        color: #495057;
+      }
+
+      .datepicker table {
+        width: 100%;
+        margin: 0;
+      }
+
+      .datepicker td,
+      .datepicker th {
+        text-align: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.25rem;
+        transition: background-color 0.2s;
+      }
+
+      .datepicker td:hover,
+      .datepicker th:hover {
+        background-color: #e9ecef;
+      }
+
+      .datepicker .active {
+        background-color: #007bff;
+        color: #fff;
+      }
+
+      .datepicker .active:hover {
+        background-color: #0056b3;
+      }
+    </style>
+
+    <script>
+      $(document).ready(function () {
+        $('.datepicker').datepicker({
+          format: 'yyyy-mm-dd',
+          autoclose: true
+        });
+      });
+    </script>
