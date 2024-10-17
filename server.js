@@ -85,7 +85,7 @@ var j = schedule.scheduleJob('0 16 * * *', function () {
 
 function sendEntryNoti() {
   var Subscriber = models.subscriber;
-  var Cron = models.cron;
+  var Cron = models.Cron;
   var limit = 10;
   var batch = 1;
   var offset = 0;
@@ -99,7 +99,7 @@ function sendEntryNoti() {
       processSubscribers(Subscriber, limit, batch, offset, c, function (status) {
         console.log(status);
 
-        newItem.updateAttributes({
+        newItem.update({
           status: 1
         })
       });
