@@ -36,12 +36,12 @@
                               <%= e.ed %>
                             </time></td>
                           <td>
-                            <button class="btn btn-sm btn-warning delete-latest" data-verb="<%= e.verb %>" data-task="<%= e.task 
-                            %>" title="Delete Latest">
+                            <button class="btn btn-sm btn-warning delete-entry" data-verb="<%= e.verb %>" data-task="<%= e.task 
+                            %>" data-latest-only="true" title="Delete Latest">
                               <i class="fas fa-trash-alt"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger delete-all" data-verb="<%= e.verb %>"
-                              data-task="<%= e.task %>" title="Delete All">
+                            <button class="btn btn-sm btn-danger delete-entry" data-verb="<%= e.verb %>"
+                              data-task="<%= e.task %>" data-latest-only="false" title="Delete All">
                               <i class="fas fa-trash"></i>
                             </button>
                           </td>
@@ -104,3 +104,37 @@
   </div>
 
   <%- include('partials/footer', {page: 'browse' }); %>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.delete-entry');
+
+        deleteButtons.forEach(button => {
+          button.addEventListener('click', function () {
+            const verb = this.getAttribute('data-verb');
+            const task = this.getAttribute('data-task');
+            const latestOnly = this.getAttribute('data-latest-only') === 'true';
+            url = "/delete?v=" + (encodeURIComponent(verb)) + "&t=" + (encodeURIComponent(task)) + "&latestOnly=" + (latestOnly);
+            alert(url);
+
+            if (confirm(`Are you sure you want to delete ${latestOnly ? 'the latest' : 'all'} "${verb}       
+    ${task}" ${latestOnly ? 'entry' : 'entries'}?`)) {
+              fetch(url, { method: 'GET' })
+                .then(response => {
+                  if (response.ok) {
+                    return response.text();
+                  }
+                  throw new Error('Network response was not ok.');
+                })
+                .then(data => {
+                  alert(data);
+                  location.reload(); // Reload the page to reflect the changes
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                  alert('An error occurred while trying to delete the entry. Please try again.');
+                });
+            }
+          });
+        });
+      });
+    </script>
