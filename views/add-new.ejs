@@ -1,100 +1,81 @@
 <%- include('partials/header', {page: 'add' , title: APP_TITLE}); %>
 
-  <div class="container mt-5">
-    <div class="row">
-      <div class="col-md-12">
-        <% if(message) { %>
-          <div class="alert alert-danger" style="display: none;">
-            <ul>
-              <% for(var i=0; i < message.length; i++) { %>
-                <li>
-                  <%= message[i].msg %>
-                </li>
-                <% } %>
-            </ul>
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div id="alertContainer" style="display: none;">
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul class="mb-0" id="alertMessages"></ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
-          <% } %>
-            <% if(messagestatus) { %>
-              <div class="alert alert-success" style="display: none;">
-                <%= messagestatus %>
-              </div>
-              <% } else { %>
-                <div class="alert alert-success">
-                  <%= messagestatus %>
+        </div>
+
+        <div id="statusAlertContainer"></div>
+
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h4 class="my-0">What did you do today?</h4>
+          </div>
+          <div class="card-body">
+            <form method="POST" action="/save" name='f' id='f'>
+              <div class="mb-3">
+                <label for="verb" class="form-label">Verb (got, bought, had, went ...)</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-text-width"></i></span>
+                  <input type="text" id="verb" name="verb" class="form-control" autocomplete="off" value='<%= verb %>'
+                    onblur="show_status('new'); return false;">
                 </div>
-                <% } %>
-                  <div class="card mb-4 shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                      <h4 class="my-0">What did you do today?</h4>
-                    </div>
-                    <div class="card-body">
-                      <form method="POST" action="/save" name='f' id='f'>
-                        <div class="form-group">
-                          <label for="verb">Verb (got, bought, had, went ...)</label>
-                          <div class="input-group">
-                            <div class="input-group-prepend">
-                              <span class="input-group-text"><i class="fas fa-text-width"></i></span>
-                            </div>
-                            <input type="text" id="verb" name="verb" class="form-control" autocomplete="off"
-                              value='<%= verb %>' onblur="show_status('new'); return false;">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label for="task">Task</label>
-                          <div class="input-group">
-                            <div class="input-group-prepend">
-                              <span class="input-group-text"><i class="fas fa-tasks"></i></span>
-                            </div>
-                            <input type="text" id="task" name="task" class="form-control"
-                              onblur="show_status('new'); return false;" value='<%= task %>' autocomplete="off">
-                          </div>
-                        </div>
-                        <div class="form-group" id="div_status" style="display:none;">
-                          <div class="alert alert-info">
-                            <div>You last <span id="s_verb" class="msg"></span> <span id="s_task" class="msg"></span> on
-                              <span id="s_last_date" class="msg"></span>, which was <span id="s_days_ago"
-                                class="msg"></span> days ago.
-                            </div>
-                            <div id="line2" style="display:none;">You usually take <span id="s_usual"
-                                class="msg"></span>
-                              days, so this time you are taking
-                              <span id="s_more_less" class="msg"></span> time.
-                            </div>
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label for="entry_date">On..</label>
-                          <div class="input-group">
-                            <div class="input-group-prepend">
-                              <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                            </div>
-                            <input type="text" class="form-control datepicker" id="entry_date" name="entry_date">
-                          </div>
-                        </div>
-                        <div class="form-group form-check">
-                          <input type="checkbox" class="form-check-input" id="memories" name="memories" value="1">
-                          <label class="form-check-label" for="memories">Add to Memories?</label>
-                        </div>
-                        <div class="form-group form-check">
-                          <input type="checkbox" class="form-check-input" id="forecast" name="forecast" value="1">
-                          <label class="form-check-label" for="forecast">Use for Forecast?</label>
-                          <input type="hidden" id="last_date" name="last_date">
-                          <input type="hidden" id="days_ago" name="days_ago">
-                        </div>
-                        <div class="form-group text-center">
-                          <button class="btn btn-primary" type="button" onclick="validate()" name="action">Submit
-                            <i class="fas fa-paper-plane"></i>
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
+              </div>
+              <div class="mb-3">
+                <label for="task" class="form-label">Task</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-tasks"></i></span>
+                  <input type="text" id="task" name="task" class="form-control"
+                    onblur="show_status('new'); return false;" value='<%= task %>' autocomplete="off">
+                </div>
+              </div>
+              <div class="mb-3" id="div_status" style="display:none;">
+                <div class="alert alert-info">
+                  <p class="mb-1">You last <span id="s_verb" class="fw-bold"></span> <span id="s_task"
+                      class="fw-bold"></span> on <span id="s_last_date" class="fw-bold"></span>, which was
+                    <span id="s_days_ago" class="fw-bold"></span> days ago.
+                  </p>
+                  <p class="mb-0" id="line2" style="display:none;">You usually take <span id="s_usual"
+                      class="fw-bold"></span> days, so this time you are taking <span id="s_more_less" class="fw-bold">
+                      </spa time.</p>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="entry_date" class="form-label">On...</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                  <input type="text" class="form-control datepicker" id="entry_date" name="entry_date">
+                </div>
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="memories" name="memories" value="1">
+                <label class="form-check-label" for="memories">Add to Memories?</label>
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="forecast" name="forecast" value="1">
+                <label class="form-check-label" for="forecast">Use for Forecast?</label>
+                <input type="hidden" id="last_date" name="last_date">
+                <input type="hidden" id="days_ago" name="days_ago">
+              </div>
+              <div class="d-grid">
+                <button class="btn btn-primary" type="button" onclick="validate()">
+                  Submit <i class="fas fa-paper-plane ms-2"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="fixed-action-btn" style="position: fixed; bottom: 24px; right: 24px;">
-    <a class="btn btn-danger btn-lg" href="/add">
+    <a class="btn btn-danger btn-lg rounded-circle" href="/add">
       <i class="fa fa-plus"></i>
     </a>
   </div>
@@ -146,5 +127,38 @@
           format: 'yyyy-mm-dd',
           autoclose: true
         });
+      });
+      document.addEventListener('DOMContentLoaded', function () {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertMessages = document.getElementById('alertMessages');
+        const statusAlertContainer = document.getElementById('statusAlertContainer');
+        const messages = <% - JSON.stringify(message || []) %>;
+        const statusMessage = <% - JSON.stringify(messagestatus || null) %>;
+
+        if (messages && messages.length > 0) {
+          alertMessages.innerHTML = messages.map(msg => `<li>${msg.msg}</li>`).join('');
+          alertContainer.style.display = 'block';
+        }
+
+        if (statusMessage) {
+          let statusContent = '';
+          if (typeof statusMessage === 'string') {
+            statusContent = statusMessage.trim();
+          } else if (typeof statusMessage === 'object') {
+            statusContent = JSON.stringify(statusMessage);
+          } else {
+            statusContent = String(statusMessage);
+          }
+
+          if (statusContent !== '') {
+            const successAlert = document.createElement('div');
+            successAlert.className = 'alert alert-success alert-dismissible fade show';
+            successAlert.innerHTML = `
+           ${statusContent}
+           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> 
+         `;
+            statusAlertContainer.appendChild(successAlert);
+          }
+        }
       });
     </script>
