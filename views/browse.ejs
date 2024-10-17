@@ -1,5 +1,5 @@
 <%- include('partials/header', {page: 'browse' , title: APP_TITLE}); %>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <div class="container mt-4">
     <div class="row">
       <div class="col-12">
@@ -36,6 +36,16 @@
                           <td><time class="timeago" datetime="<%= e.ed %>">
                               <%= e.ed %>
                             </time></td>
+                          <td>
+                            <button class="btn btn-sm btn-warning delete-latest" data-verb="<%= e.verb %>" data-task="<%= e.task 
+                            %>" title="Delete Latest">
+                              <i class="fas fa-trash-alt"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-all" data-verb="<%= e.verb %>"
+                              data-task="<%= e.task %>" title="Delete All">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </td>
                         </tr>
                         <% }) %>
                   </tbody>

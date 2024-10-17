@@ -191,4 +191,32 @@ $(document).ready(function () {
 
   // Trigger change event to update days_ago
   $('#entry_date').trigger('change');
+
+  $('.delete-latest, .delete-all').on('click', function () {
+    var verb = $(this).data('verb');
+    var task = $(this).data('task');
+    var latestOnly = $(this).hasClass('delete-latest');
+    var confirmMessage = latestOnly ?
+      'Are you sure you want to delete the latest entry for "' + verb + ' ' + task + '"?' :
+      'Are you sure you want to delete ALL entries for "' + verb + ' ' + task + '"?';
+
+    if (confirm(confirmMessage)) {
+      $.ajax({
+        url: '/delete',
+        method: 'GET',
+        data: {
+          v: verb,
+          t: task,
+          latestOnly: latestOnly
+        },
+        success: function (response) {
+          alert(response);
+          location.reload(); // Reload the page to reflect the changes
+        },
+        error: function (xhr, status, error) {
+          alert('Error: ' + xhr.responseText);
+        }
+      });
+    }
+  });
 });
