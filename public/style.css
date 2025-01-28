@@ -194,3 +194,22 @@ body {
     margin-top: 0.5rem;
     display: block;
 }
+
+/* Media Queries for Mobile */
+@media (max-width: 767.98px) {
+    .task-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .task-actions {
+        margin-top: 0.5rem;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .action-button {
+        width: 30px;
+        height: 30px;
+    }
+}
