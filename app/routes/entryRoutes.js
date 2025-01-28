@@ -253,7 +253,44 @@ module.exports = function (models, isLoggedIn) { // Accept isLoggedIn as a param
                 'verb',
                 'task',
                 [Entry.sequelize.fn('to_char', Entry.sequelize.col('entry_date'), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), 'ed'],
-                ['entry_date', 'ed2']
+                ['entry_date', 'ed2'],
+                [
+                    Entry.sequelize.literal(`ROUND(
+                        (
+                            SELECT AVG(days_ago)
+                            FROM "entries" e2 
+                            WHERE 
+                                e2.created_by = "Entry".created_by 
+                                AND e2.status = 1 
+                                AND e2.forecast = 1 
+                                AND e2.verb = "Entry".verb 
+                                AND e2.task = "Entry".task 
+                                AND e2.days_ago > 0
+                        )
+                    , 0)`),
+                    'frequency'
+                ],
+                [
+                    Entry.sequelize.literal(`CASE 
+                        WHEN "Entry".next_date < NOW() THEN true
+                        ELSE false
+                    END`),
+                    'isOverdue'
+                ],
+                [
+                    Entry.sequelize.literal(`CASE 
+                        WHEN "Entry".next_date < NOW() THEN DATE_PART('day', NOW() - "Entry".next_date)
+                        ELSE 0
+                    END`),
+                    'overdueDays'
+                ],
+                [
+                    Entry.sequelize.literal(`CASE 
+                        WHEN "Entry".next_date >= NOW() THEN DATE_PART('day', "Entry".next_date - NOW())
+                        ELSE 0
+                    END`),
+                    'dueInDays'
+                ]
             ],
             order: [['entry_date', 'DESC']],
             limit: limit,

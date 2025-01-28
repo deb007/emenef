@@ -8,89 +8,52 @@
           </div>
           <div class="card-body">
             <% if(entries.length> 0) { %>
-              <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead class="table-light">
-                    <tr>
-                      <th>Action</th>
-                      <th>Task</th>
-                      <th>Date</th>
-                      <th>Time Ago</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <% entries.forEach(function(e) { %>
-                      <% var formattedDate=new Date(e.ed2).toLocaleDateString('en-US', { weekday: 'long' ,
-                        day: 'numeric' , month: 'long' , year: 'numeric' }); %>
-                        <tr>
-                          <td>
-                            <%= e.verb %>
-                          </td>
-                          <td>
-                            <%= e.task %>
-                          </td>
-                          <td>
-                            <%= formattedDate %>
-                          </td>
-                          <td><time class="timeago" datetime="<%= e.ed %>">
-                              <%= e.ed %>
-                            </time></td>
-                          <td>
-                            <button class="btn btn-sm btn-warning delete-entry" data-verb="<%= e.verb %>" data-task="<%= e.task 
-                            %>" data-latest-only="true" title="Delete Latest">
-                              <i class="fas fa-trash-alt"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger delete-entry" data-verb="<%= e.verb %>"
-                              data-task="<%= e.task %>" data-latest-only="false" title="Delete All">
-                              <i class="fas fa-trash"></i>
-                            </button>
-                          </td>
-                        </tr>
-                        <% }) %>
-                  </tbody>
-                </table>
-              </div>
 
-              <% if (pages> 1) { %>
-                <nav aria-label="Page navigation" class="mt-4">
-                  <ul class="pagination justify-content-center">
-                    <% var startPage=Math.max(1, current_page - 1); var endPage=Math.min(pages, startPage + 2); if
-                      (endPage - startPage < 2) startPage=Math.max(1, endPage - 2); %>
+              <% entries.forEach(function(e) { %>
+                <%- include('partials/task', { fe: e }) %>
+                  <% }) %>
 
-                      <% if (current_page> 1) { %>
-                        <li class="page-item">
-                          <a class="page-link" href="/browse?page=<%= current_page - 1 %>">&lsaquo;</a>
-                        </li>
-                        <% } %>
 
-                          <% for(var i=startPage; i <=endPage; i++) { %>
-                            <li class="page-item <%= (current_page == i) ? 'active' : '' %>">
-                              <a class="page-link" href="/browse?page=<%= i %>">
-                                <%= i %>
-                              </a>
-                            </li>
-                            <% } %>
+                    <% if (pages> 1) { %>
+                      <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                          <% var startPage=Math.max(1, current_page - 1); var endPage=Math.min(pages, startPage + 2); if
+                            (endPage - startPage < 2) startPage=Math.max(1, endPage - 2); %>
 
-                              <% if (current_page < pages) { %>
-                                <li class="page-item">
-                                  <a class="page-link"
-                                    href="/browse?page=<%= parseInt(current_page) + 1 %>">&rsaquo;</a>
-                                </li>
-                                <% } %>
-                  </ul>
-                </nav>
-                <% } %>
-                  <% } else { %>
-                    <p class="text-center">No entries yet. Why not <a href='/add'>add a few tasks</a> that you
-                      did today?</p>
-                    <p class="text-center">
-                      <%= APP_TITLE %> will automatically forecast and tell you the tasks
-                        that you might want to do every day. It does this by calculating the time you usually take
-                        between
-                        two
-                        similar tasks.
-                    </p>
-                    <% } %>
+                            <% if (current_page> 1) { %>
+                              <li class="page-item">
+                                <a class="page-link" href="/browse?page=<%= current_page - 1 %>">&lsaquo;</a>
+                              </li>
+                              <% } %>
+
+                                <% for(var i=startPage; i <=endPage; i++) { %>
+                                  <li class="page-item <%= (current_page == i) ? 'active' : '' %>">
+                                    <a class="page-link" href="/browse?page=<%= i %>">
+                                      <%= i %>
+                                    </a>
+                                  </li>
+                                  <% } %>
+
+                                    <% if (current_page < pages) { %>
+                                      <li class="page-item">
+                                        <a class="page-link"
+                                          href="/browse?page=<%= parseInt(current_page) + 1 %>">&rsaquo;</a>
+                                      </li>
+                                      <% } %>
+                        </ul>
+                      </nav>
+                      <% } %>
+                        <% } else { %>
+                          <p class="text-center">No entries yet. Why not <a href='/add'>add a few tasks</a> that you
+                            did today?</p>
+                          <p class="text-center">
+                            <%= APP_TITLE %> will automatically forecast and tell you the tasks
+                              that you might want to do every day. It does this by calculating the time you usually take
+                              between
+                              two
+                              similar tasks.
+                          </p>
+                          <% } %>
           </div>
         </div>
       </div>
@@ -104,37 +67,3 @@
   </div>
 
   <%- include('partials/footer', {page: 'browse' }); %>
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const deleteButtons = document.querySelectorAll('.delete-entry');
-
-        deleteButtons.forEach(button => {
-          button.addEventListener('click', function () {
-            const verb = this.getAttribute('data-verb');
-            const task = this.getAttribute('data-task');
-            const latestOnly = this.getAttribute('data-latest-only') === 'true';
-            url = "/delete?v=" + (encodeURIComponent(verb)) + "&t=" + (encodeURIComponent(task)) + "&latestOnly=" + (latestOnly);
-            alert(url);
-
-            if (confirm(`Are you sure you want to delete ${latestOnly ? 'the latest' : 'all'} "${verb}       
-    ${task}" ${latestOnly ? 'entry' : 'entries'}?`)) {
-              fetch(url, { method: 'GET' })
-                .then(response => {
-                  if (response.ok) {
-                    return response.text();
-                  }
-                  throw new Error('Network response was not ok.');
-                })
-                .then(data => {
-                  alert(data);
-                  location.reload(); // Reload the page to reflect the changes
-                })
-                .catch(error => {
-                  console.error('Error:', error);
-                  alert('An error occurred while trying to delete the entry. Please try again.');
-                });
-            }
-          });
-        });
-      });
-    </script>
