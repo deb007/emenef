@@ -39,8 +39,13 @@
                     <a href="/edit/<%= fe.id %>" class="action-button edit-button">
                       <i class="fas fa-edit"></i>
                     </a>
-                    <a href="/delete/<%= fe.id %>" class="action-button delete-button">
+                    <a href="/delete?v=<%= fe.verb %>&t=<%= fe.task %>&latestOnly=true"
+                      class="action-button delete-button" title="Delete Latest">
                       <i class="fas fa-trash-alt"></i>
+                    </a>
+                    <a href="/delete?v=<%= fe.verb %>&t=<%= fe.task %>&latestOnly=false"
+                      class="action-button delete-button" title="Delete All" style="background-color: red; color: white;">
+                      <i class="fas fa-trash"></i>
                     </a>
                   </div>
                 </div>
