@@ -89,8 +89,33 @@ module.exports = function (app, models) {
     const forecastEntriesQuery = `
       SELECT verb, task, 
         TO_CHAR(next_date, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS ed, 
-        entry_date AS ed2 
-      FROM entries 
+        entry_date AS ed2,
+        ROUND(
+          (
+              SELECT AVG(days_ago)
+              FROM entries e2 
+              WHERE 
+                  e2.created_by = e1.created_by 
+                  AND e2.status = 1 
+                  AND e2.forecast = 1 
+                  AND e2.verb = e1.verb 
+                  AND e2.task = e1.task 
+                  AND e2.days_ago > 0
+          )
+        , 0) AS frequency,
+        CASE 
+          WHEN next_date < NOW() THEN true
+          ELSE false
+        END AS "isOverdue",
+        CASE 
+          WHEN next_date < NOW() THEN DATE_PART('day', NOW() - next_date)
+          ELSE 0
+        END AS "overdueDays",
+        CASE 
+          WHEN next_date >= NOW() THEN DATE_PART('day', next_date - NOW())
+          ELSE 0
+        END AS "dueInDays"
+      FROM entries e1
       WHERE created_by = ? AND status = 1 AND forecast = 1 
         AND next_date < NOW() + INTERVAL '7 days' 
       ORDER BY next_date

@@ -1,98 +1,121 @@
 <%- include('partials/header', {page: 'home' , title: APP_TITLE}); %>
 
-  <div class="container-fluid mt-4">
-    <div class="row">
-      <div class="col-12">
-        <div class="card mb-4 shadow-sm">
-          <div class="card-header bg-primary text-white">
-            <h4 class="my-0">Your Forecasted Upcoming Tasks</h4>
-          </div>
-          <div class="card-body bg-light">
-            <% if(f_entries.length> 0) { %>
-              <p class="card-text">Hey!! These are the tasks you would probably want to do today -</p>
-              <div class="list-group">
-                <% f_entries.forEach(function(fe) { %>
-                  <% var formattedDate=new Date(fe.ed2).toLocaleDateString('en-US', { weekday: 'long' , day: 'numeric' ,
-                    month: 'long' , year: 'numeric' }); %>
-                    <a href="/add?verb=<%= fe.verb %>&task=<%= fe.task %>" class="list-group-item
-                  list-group-item-action d-flex justify-content-between align-items-center flex-wrap">
-                      <span class="mb-1 mb-md-0">
-                        <i class="fa fa-plus-circle text-success me-2"></i>
-                        You last <strong>
-                          <%= fe.verb %>
-                            <%= fe.task %>
-                        </strong>
-                      </span>
-                      <span class="text-muted small d-block d-md-inline mt-2 mt-md-0">
-                        <span class="badge bg-info text-white me-1">Next On</span> <strong>
-                          <%= formattedDate || 'Unknown' %>
-                        </strong>
-                        <span class="badge bg-primary ms-2">
-                          <time class="timeago" datetime="<%= fe.ed %>">
-                            <%= fe.ed %>
-                          </time>
-                        </span>
-                      </span>
-                    </a>
-                    <% }) %>
-              </div>
-              <% } else { %>
-                <p class="card-text">Sorry, No tasks for today. Why not <a href='/add'>add few tasks</a> that you did
-                  today?</p>
-                <p class="card-text">
-                  <%= APP_TITLE %> will automatically forecast and tell you the tasks that you might want to do every
-                    day. It does this
-                    by calculating the time you usually take between two similar tasks.
-                </p>
-                <% } %>
-                  <span id="orphan"></span>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="container mt-4">
+    <!-- Header -->
+    <header class="header">
+      <h1 class="title">Task Tracker</h1>
+      <a href="/add" class="add-button">
+        <i class="fas fa-plus"></i>
+        Add Task
+      </a>
+    </header>
 
-    <div class="row">
-      <div class="col-12">
-        <div class="card mb-4 shadow-sm">
-          <div class="card-header bg-success text-white">
-            <h4 class="my-0">Your Memories for Today</h4>
-          </div>
-          <div class="card-body bg-light">
-            <% if(m_entries.length> 0) { %>
-              <p class="card-text">This is what happened around today's date (<%= dd %>) in the last few years -</p>
-              <<div class="list-group">
-                <% m_entries.forEach(function(me) { %>
-                  <div class="list-group-item d-flex justify-content-between align-items-center
- flex-wrap">
-                    <span class="mb-1 mb-md-0">
-                      <i class="fa fa-info-circle text-success me-2"></i>
-                      <%= me.verb %>
-                        <%= me.task %>
+    <!-- Task List -->
+    <div class="task-list">
+      <% if(f_entries.length> 0) { %>
+        <p class="card-text">Hey!! These are the tasks you would probably want to do today -</p>
+        <% f_entries.forEach(function(fe) { %>
+          <% var formattedDate=new Date(fe.ed2).toLocaleDateString('en-US', { weekday: 'short' , day: 'numeric' ,
+            month: 'short' , year: 'numeric' }); %>
+            <% var formattedDueDate=new Date(fe.ed).toLocaleDateString('en-US', { weekday: 'short' , day: 'numeric' ,
+              month: 'short' , year: 'numeric' }); %>
+              <div class="task-card">
+                <div class="left-indicator" style="background-color: <%= fe.isOverdue ? '#dc3545' : '#ffc107' %>;">
+                </div>
+                <div class="task-header">
+                  <div class="task-title-section">
+                    <h3 class="task-name">
+                      <i class="fas fa-tasks"></i>
+                      <%= fe.verb %>&nbsp;<%= fe.task %>
+                    </h3>
+                  </div>
+                  <div class="task-actions">
+                    <a href="/add?verb=<%= fe.verb %>&task=<%= fe.task %>" class="action-button done-button">
+                      <i class="fas fa-check"></i>
+                    </a>
+                    <a href="/edit/<%= fe.id %>" class="action-button edit-button">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="/delete/<%= fe.id %>" class="action-button delete-button">
+                      <i class="fas fa-trash-alt"></i>
+                    </a>
+                  </div>
+                </div>
+                <div class="task-footer">
+                  <div class="task-meta">
+                    <span class="meta-item">
+                      <i class="far fa-calendar-alt"></i>
+                      Last: <%= formattedDate %>
                     </span>
-                    <span class="text-muted small d-block d-md-inline mt-2 mt-md-0">
-                      on <%= me.ed2 %>
-                        <span class="badge bg-success ms-2">
-                          <time class="timeago" datetime="<%= me.ed %>">
-                            <%= me.ed %>
-                          </time>
-                        </span>
+                    <span class="meta-item">
+                      <i class="fas fa-redo"></i>
+                      Every <b>
+                        <%= fe.frequency %>
+                      </b> days
                     </span>
                   </div>
-                  <% }) %>
+                  <div class="task-status">
+                    <span class="status-badge <%= fe.isOverdue ? '' : 'due-soon' %>">
+                      <i class="fas fa-<%= fe.isOverdue ? 'exclamation-circle' : 'clock' %>"></i>
+                      <%= fe.isOverdue ? 'Overdue by ' + fe.overdueDays + ' days' : 'Due in ' + fe.dueInDays + ' days'
+                        %>
+                    </span>
+                    <span class="due-date"
+                      style="font-weight: bold; font-size: small;text-align: right; padding-right: 3px;">
+                      <%= formattedDueDate %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+                <% } else { %>
+                  <p class="card-text">Sorry, No tasks for today. Why not <a href='/add'>add few tasks</a> that you did
+                    today?</p>
+                  <p class="card-text">
+                    <%= APP_TITLE %> will automatically forecast and tell you the tasks that you might want to do every
+                      day. It does this by calculating the time you usually take between two similar tasks.
+                  </p>
+                  <% } %>
+                    <span id="orphan"></span>
+    </div>
+
+    <!-- Memories Section -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header bg-success text-white">
+        <h4 class="my-0">Your Memories for Today</h4>
+      </div>
+      <div class="card-body bg-light">
+        <% if(m_entries.length> 0) { %>
+          <p class="card-text">This is what happened around today's date (<%= dd %>) in the last few years -</p>
+          <div class="list-group">
+            <% m_entries.forEach(function(me) { %>
+              <div class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-info-circle text-success me-2"></i>
+                  <span>
+                    <%= me.verb %>
+                      <%= me.task %>
+                  </span>
+                </div>
+                <div class="text-muted small d-block d-md-inline mt-2 mt-md-0">
+                  on <%= me.ed2 %>
+                    <span class="badge bg-success ms-2">
+                      <time class="timeago" datetime="<%= me.ed %>">
+                        <%= me.ed %>
+                      </time>
+                    </span>
+                </div>
+              </div>
+              <% }) %>
           </div>
           <% } else { %>
-            <p class="card-text">Sorry, No entries on today's date. Why not <a href='/add'>add few
-                entries</a>?<br>
-              Has it been a year that you bought that new car? Or had that wonderful vacation? Or met your
-              loved
-              one?
+            <p class="card-text">Sorry, No entries on today's date. Why not <a href='/add'>add few entries</a>?<br>
+              Has it been a year that you bought that new car? Or had that wonderful vacation? Or met your loved one?
               Let <%= APP_TITLE %> take care of your previous years' memories and bask in nostalgia.
             </p>
             <% } %>
-        </div>
       </div>
     </div>
-  </div>
   </div>
 
   <div class="fixed-action-btn" style="position: fixed; bottom: 24px; right: 24px;">
