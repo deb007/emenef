@@ -132,6 +132,11 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.action-button:hover {
+    transform: scale(1.1);
 }
 
 .done-button {
