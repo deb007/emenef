@@ -205,7 +205,7 @@ body {
     .task-actions {
         margin-top: 0.5rem;
         width: 100%;
-        justify-content: space-between;
+        justify-content: right;
     }
 
     .action-button {
