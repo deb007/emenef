@@ -1,0 +1,15 @@
+services:
+  emenef:
+    build: .
+    container_name: nodejs-app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "8081:8081"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
