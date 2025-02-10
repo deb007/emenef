@@ -4,5 +4,5 @@ RUN apk add --no-cache python3 py3-pip make g++
 COPY package*.json ./
 RUN npm install
 COPY . .
-EXPOSE 8081
+EXPOSE 8080
 CMD ["npm", "start"]
