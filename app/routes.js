@@ -15,33 +15,36 @@ function isLoggedIn(req, res, next) {
 function send_mail(to_email, subject, body) {
   var Sendgrid = require('sendgrid')(process.env.SENDGRID_API_KEY);
 
-  const sgReq = Sendgrid.emptyRequest({
-    method: 'POST',
-    path: '/v3/mail/send',
-    body: {
-      personalizations: [{
-        to: [{ email: to_email }],
-        subject: subject
-      }],
-      from: { email: process.env.SENDGRID_SENDER },
-      content: [{
-        type: 'text/html',
-        value: body
-      }]
-    }
-  });
-
-  Sendgrid.API(sgReq, (err, response) => {
-    if (err) {
-      console.log('Mail could not be sent: ' + err);
-      if (response) {
-        console.log('Response status code: ' + response.statusCode);
-        console.log('Response body: ' + response.body);
+  return new Promise((resolve, reject) => {
+    const sgReq = Sendgrid.emptyRequest({
+      method: 'POST',
+      path: '/v3/mail/send',
+      body: {
+        personalizations: [{
+          to: [{ email: to_email }],
+          subject: subject
+        }],
+        from: { email: process.env.SENDGRID_SENDER },
+        content: [{
+          type: 'text/html',
+          value: body
+        }]
       }
-      return "err";
-    }
-    console.log('Mail sent Successfully');
-    return "done";
+    });
+
+    Sendgrid.API(sgReq, (err, response) => {
+      if (err) {
+        console.log('Mail could not be sent: ' + err);
+        if (response) {
+          console.log('Response status code: ' + response.statusCode);
+          console.log('Response body: ' + response.body);
+        }
+        reject(err);
+      } else {
+        console.log('Mail sent Successfully');
+        resolve("done");
+      }
+    });
   });
 }
 
@@ -153,19 +156,42 @@ module.exports = function (app, models) {
   app.get('/send-forecast-emails', function (req, res) {
     const User = models.user;
     const Entry = models.Entry;
+    const todayIs = new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
 
     const forecastEntriesQuery = `
-      SELECT verb, task, 
-        TO_CHAR(next_date, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS ed, 
-        entry_date AS ed2 
+      SELECT 
+        verb, 
+        task, 
+        TO_CHAR(next_date, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS ed,
+        entry_date AS ed2,
+        CASE 
+          WHEN next_date < CURRENT_DATE THEN 'delayed'
+          WHEN next_date = CURRENT_DATE THEN 'today'
+          ELSE 'upcoming'
+        END AS status
       FROM entries 
-      WHERE created_by = ? AND status = 1 AND forecast = 1 
+      WHERE created_by = ? 
+        AND status = 1 
+        AND forecast = 1 
         AND next_date < NOW() + INTERVAL '7 days' 
       ORDER BY next_date
     `;
 
+    let emailStats = {
+      totalUsers: 0,
+      emailsSent: 0,
+      errors: [],
+      usersWithNoTasks: 0
+    };
+
     User.findAll()
       .then(users => {
+        emailStats.totalUsers = users.length;
         const emailPromises = users.map(user => {
           return Entry.sequelize.query(forecastEntriesQuery, {
             replacements: [user.id],
@@ -173,12 +199,51 @@ module.exports = function (app, models) {
           })
             .then(f_entries => {
               if (f_entries.length > 0) {
-                var emailBody = "Hey " + user.fullname + ",\n\n";
-                emailBody += "Here are the upcoming tasks and their expected dates:\n";
-                emailBody += "<ol>";
-                emailBody += f_entries.map(entry => `<li><b>${entry.verb} ${entry.task}</b> expected on <b>${new Date(entry.ed).toLocaleDateString()}</b></li>`).join('\n');
-                emailBody += "</ol>";
-                return send_mail(user.email, 'Your forecasted tasks for the next 7 days', emailBody);
+                const delayed = f_entries.filter(e => e.status === 'delayed');
+                const today = f_entries.filter(e => e.status === 'today');
+                const upcoming = f_entries.filter(e => e.status === 'upcoming');
+
+                let emailBody = `<h2>Forecast Report for ${todayIs}</h2>`;
+                emailBody += `<p>Hello ${user.fullname},</p>`;
+
+                if (delayed.length > 0) {
+                  emailBody += "<h3>⚠️ Delayed Tasks</h3><ul>";
+                  emailBody += delayed.map(entry =>
+                    `<li><b>${entry.verb} ${entry.task}</b> (due on ${new Date(entry.ed).toLocaleDateString()})</li>`
+                  ).join('\n');
+                  emailBody += "</ul>";
+                }
+
+                if (today.length > 0) {
+                  emailBody += "<h3>📅 Due Today</h3><ul>";
+                  emailBody += today.map(entry =>
+                    `<li><b>${entry.verb} ${entry.task}</b></li>`
+                  ).join('\n');
+                  emailBody += "</ul>";
+                }
+
+                if (upcoming.length > 0) {
+                  emailBody += "<h3>🔜 Coming Soon</h3><ul>";
+                  emailBody += upcoming.map(entry =>
+                    `<li><b>${entry.verb} ${entry.task}</b> (due on ${new Date(entry.ed).toLocaleDateString()})</li>`
+                  ).join('\n');
+                  emailBody += "</ul>";
+                }
+
+                return send_mail(
+                  user.email,
+                  `Forecast Tasks Report - ${todayIs}`,
+                  emailBody
+                ).then(() => {
+                  emailStats.emailsSent++;
+                }).catch(err => {
+                  emailStats.errors.push({
+                    user: user.email,
+                    error: err.message
+                  });
+                });
+              } else {
+                emailStats.usersWithNoTasks++;
               }
             });
         });
@@ -186,11 +251,18 @@ module.exports = function (app, models) {
         return Promise.all(emailPromises);
       })
       .then(() => {
-        res.status(200).send({ success: true });
+        res.status(200).send({
+          success: true,
+          stats: emailStats
+        });
       })
       .catch(err => {
         console.error("Error sending forecast emails:", err);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send({
+          success: false,
+          error: err.message,
+          stats: emailStats
+        });
       });
   });
 };
