@@ -189,6 +189,114 @@ module.exports = function (app, models) {
       usersWithNoTasks: 0
     };
 
+    // CSS styles for modern email template
+    const styles = `
+      <style>
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          color: #333;
+          line-height: 1.6;
+          margin: 0;
+          padding: 0;
+          background-color: #f9f9f9;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #ffffff;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          padding-bottom: 20px;
+          border-bottom: 1px solid #eaeaea;
+          margin-bottom: 20px;
+        }
+        .header h1 {
+          color: #2c3e50;
+          font-size: 24px;
+          margin: 0;
+          padding: 0;
+        }
+        .date {
+          color: #7f8c8d;
+          font-size: 16px;
+          margin-top: 5px;
+        }
+        .greeting {
+          margin-bottom: 20px;
+        }
+        .section {
+          margin-bottom: 25px;
+          padding-bottom: 15px;
+        }
+        .section-header {
+          display: flex;
+          align-items: center;
+          font-size: 18px;
+          color: #2c3e50;
+          margin-bottom: 10px;
+          padding-bottom: 5px;
+          border-bottom: 1px solid #eaeaea;
+        }
+        .section-icon {
+          margin-right: 10px;
+          font-size: 20px;
+        }
+        .task-list {
+          list-style-type: none;
+          padding: 0;
+          margin: 0;
+        }
+        .task-item {
+          padding: 12px 15px;
+          margin-bottom: 8px;
+          background-color: #f8f9fa;
+          border-left: 4px solid #3498db;
+          border-radius: 4px;
+        }
+        .task-item.delayed {
+          border-left-color: #e74c3c;
+        }
+        .task-item.today {
+          border-left-color: #f39c12;
+        }
+        .task-item.upcoming {
+          border-left-color: #2ecc71;
+        }
+        .task-title {
+          font-weight: 600;
+          color: #34495e;
+        }
+        .task-date {
+          font-size: 14px;
+          color: #7f8c8d;
+          margin-top: 5px;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #eaeaea;
+          color: #95a5a6;
+          font-size: 14px;
+        }
+        .empty-state {
+          text-align: center;
+          padding: 30px;
+          color: #7f8c8d;
+        }
+        @media only screen and (max-width: 600px) {
+          .container {
+            width: 100%;
+            border-radius: 0;
+          }
+        }
+      </style>
+    `;
+
     User.findAll()
       .then(users => {
         emailStats.totalUsers = users.length;
@@ -203,36 +311,113 @@ module.exports = function (app, models) {
                 const today = f_entries.filter(e => e.status === 'today');
                 const upcoming = f_entries.filter(e => e.status === 'upcoming');
 
-                let emailBody = `<h2>Forecast Report for ${todayIs}</h2>`;
-                emailBody += `<p>Hello ${user.fullname},</p>`;
+                // Start building the modern email template
+                let emailBody = `
+                  <!DOCTYPE html>
+                  <html lang="en">
+                  <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Task Forecast</title>
+                    ${styles}
+                  </head>
+                  <body>
+                    <div class="container">
+                      <div class="header">
+                        <h1>Your Task Forecast</h1>
+                        <div class="date">${todayIs}</div>
+                      </div>
+                      
+                      <div class="greeting">
+                        <p>Hello ${user.fullname},</p>
+                        <p>Here's your personalized task forecast for the upcoming days:</p>
+                      </div>
+                `;
 
+                // Delayed tasks section
                 if (delayed.length > 0) {
-                  emailBody += "<h3>⚠️ Delayed Tasks</h3><ul>";
-                  emailBody += delayed.map(entry =>
-                    `<li><b>${entry.verb} ${entry.task}</b> (due on ${new Date(entry.ed).toLocaleDateString()})</li>`
-                  ).join('\n');
-                  emailBody += "</ul>";
+                  emailBody += `
+                    <div class="section">
+                      <div class="section-header">
+                        <span class="section-icon">⚠️</span>
+                        <span>Overdue Tasks (${delayed.length})</span>
+                      </div>
+                      <ul class="task-list">
+                  `;
+
+                  emailBody += delayed.map(entry => `
+                    <li class="task-item delayed">
+                      <div class="task-title">${entry.verb} ${entry.task}</div>
+                      <div class="task-date">Due on ${new Date(entry.ed).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+                    </li>
+                  `).join('');
+
+                  emailBody += `
+                      </ul>
+                    </div>
+                  `;
                 }
 
+                // Today's tasks section
                 if (today.length > 0) {
-                  emailBody += "<h3>📅 Due Today</h3><ul>";
-                  emailBody += today.map(entry =>
-                    `<li><b>${entry.verb} ${entry.task}</b></li>`
-                  ).join('\n');
-                  emailBody += "</ul>";
+                  emailBody += `
+                    <div class="section">
+                      <div class="section-header">
+                        <span class="section-icon">📅</span>
+                        <span>Today's Tasks (${today.length})</span>
+                      </div>
+                      <ul class="task-list">
+                  `;
+
+                  emailBody += today.map(entry => `
+                    <li class="task-item today">
+                      <div class="task-title">${entry.verb} ${entry.task}</div>
+                    </li>
+                  `).join('');
+
+                  emailBody += `
+                      </ul>
+                    </div>
+                  `;
                 }
 
+                // Upcoming tasks section
                 if (upcoming.length > 0) {
-                  emailBody += "<h3>🔜 Coming Soon</h3><ul>";
-                  emailBody += upcoming.map(entry =>
-                    `<li><b>${entry.verb} ${entry.task}</b> (due on ${new Date(entry.ed).toLocaleDateString()})</li>`
-                  ).join('\n');
-                  emailBody += "</ul>";
+                  emailBody += `
+                    <div class="section">
+                      <div class="section-header">
+                        <span class="section-icon">🔜</span>
+                        <span>Coming Soon (${upcoming.length})</span>
+                      </div>
+                      <ul class="task-list">
+                  `;
+
+                  emailBody += upcoming.map(entry => `
+                    <li class="task-item upcoming">
+                      <div class="task-title">${entry.verb} ${entry.task}</div>
+                      <div class="task-date">Due on ${new Date(entry.ed).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+                    </li>
+                  `).join('');
+
+                  emailBody += `
+                      </ul>
+                    </div>
+                  `;
                 }
+
+                // Add footer
+                emailBody += `
+                      <div class="footer">
+                        <p>Stay productive and have a great day!</p>
+                      </div>
+                    </div>
+                  </body>
+                  </html>
+                `;
 
                 return send_mail(
                   user.email,
-                  `Forecast Tasks Report - ${todayIs}`,
+                  `Task Forecast - ${todayIs}`,
                   emailBody
                 ).then(() => {
                   emailStats.emailsSent++;
@@ -243,7 +428,9 @@ module.exports = function (app, models) {
                   });
                 });
               } else {
+                // No tasks
                 emailStats.usersWithNoTasks++;
+                return Promise.resolve();
               }
             });
         });
