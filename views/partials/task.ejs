@@ -2,9 +2,10 @@
     year: 'numeric' }); %>
     <% var formattedDueDate=new Date(fe.ed).toLocaleDateString('en-US', { weekday: 'short' , day: 'numeric' ,
         month: 'short' , year: 'numeric' }); %>
+
         <div class="task-card">
-            <div class="left-indicator" style="background-color: <%= fe.isOverdue ? '#dc3545' : '#ffc107' %>;">
-            </div>
+            <div class="left-indicator"
+                style="background-color: <%= fe.isOverdue ? 'var(--danger-color)' : 'var(--warning-color)' %>;"></div>
             <div class="task-header">
                 <div class="task-title-section">
                     <h3 class="task-name">
@@ -13,20 +14,21 @@
                     </h3>
                 </div>
                 <div class="task-actions">
-                    <a href="/add?verb=<%= fe.verb %>&task=<%= fe.task %>" class="action-button done-button">
+                    <a href="/add?verb=<%= fe.verb %>&task=<%= fe.task %>" class="action-button done-button"
+                        title="Mark as Done">
                         <i class="fas fa-check"></i>
                     </a>
-                    <a href="/edit/<%= fe.id %>" class="action-button edit-button">
+                    <a href="/edit/<%= fe.id %>" class="action-button edit-button" title="Edit Task">
                         <i class="fas fa-edit"></i>
                     </a>
                     <a href="javascript:void(0);" class="action-button delete-button delete-entry"
                         data-verb="<%= fe.verb %>" data-task="<%= fe.task %>" data-latest-only="true"
-                        title="Delete Latest">
+                        title="Delete Latest Entry">
                         <i class="fas fa-trash-alt"></i>
                     </a>
-                    <a href="javascript:void(0);" class="action-button delete-button delete-entry"
-                        data-verb="<%= fe.verb %>" data-task="<%= fe.task %>" data-latest-only="false"
-                        title="Delete All" style="background-color: red; color: white;">
+                    <a href="javascript:void(0);" class="action-button delete-entry" data-verb="<%= fe.verb %>"
+                        data-task="<%= fe.task %>" data-latest-only="false" title="Delete All Entries"
+                        style="background-color: var(--danger-color); color: white;">
                         <i class="fas fa-trash"></i>
                     </a>
                 </div>
@@ -35,7 +37,7 @@
                 <div class="task-meta">
                     <span class="meta-item">
                         <i class="far fa-calendar-alt"></i>
-                        <span class="d-none d-md-inline">Last:</span>
+                        <span class="d-none d-md-inline">Last Done:</span>
                         <%= formattedDate %>
                     </span>
                     <span class="meta-item">
@@ -56,8 +58,7 @@
                             <%= fe.isOverdue ? fe.overdueDays + ' days' : fe.dueInDays + ' days' %>
                         </span>
                     </span>
-                    <span class="due-date"
-                        style="font-weight: bold; font-size: small;text-align: right; padding-right: 3px;">
+                    <span class="due-date">
                         <%= formattedDueDate %>
                     </span>
                 </div>
